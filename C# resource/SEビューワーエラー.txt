@@ -1,0 +1,91 @@
+
+
+Just-In-Time (JIT) デバッグを呼び出すための詳細については、
+ダイアログ ボックスではなく、このメッセージの最後を参照してください。
+
+************** 例外テキスト **************
+System.Exception: デバイスが開けませんでした。(4)
+   場所 Tsukikage.WinMM.WaveIO.WaveOut..ctor(Int32 deviceId, Int32 samplesPerSec, Int32 bitsPerSample, Int32 channels)
+   場所 SEViewer.soundPlayer.PlaySound(String fileName)
+   場所 SEViewer.Form1.listView1_KeyDown(Object sender, KeyEventArgs e)
+   場所 System.Windows.Forms.Control.OnKeyDown(KeyEventArgs e)
+   場所 System.Windows.Forms.Control.ProcessKeyEventArgs(Message& m)
+   場所 System.Windows.Forms.Control.ProcessKeyMessage(Message& m)
+   場所 System.Windows.Forms.Control.WmKeyChar(Message& m)
+   場所 System.Windows.Forms.Control.WndProc(Message& m)
+   場所 System.Windows.Forms.ListView.WndProc(Message& m)
+   場所 System.Windows.Forms.Control.ControlNativeWindow.OnMessage(Message& m)
+   場所 System.Windows.Forms.Control.ControlNativeWindow.WndProc(Message& m)
+   場所 System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+
+************** 読み込まれたアセンブリ **************
+mscorlib
+    アセンブリ バージョン: 2.0.0.0
+    Win32 バージョン: 2.0.50727.5472 (Win7SP1GDR.050727-5400)
+    コードベース: file:///C:/Windows/Microsoft.NET/Framework/v2.0.50727/mscorlib.dll
+----------------------------------------
+SEViewer
+    アセンブリ バージョン: 1.0.0.0
+    Win32 バージョン: 1.0.0.0
+    コードベース: file:///D:/project/Sengoku/data/sound/se/SEViewer.exe
+----------------------------------------
+System.Windows.Forms
+    アセンブリ バージョン: 2.0.0.0
+    Win32 バージョン: 2.0.50727.5468 (Win7SP1GDR.050727-5400)
+    コードベース: file:///C:/Windows/assembly/GAC_MSIL/System.Windows.Forms/2.0.0.0__b77a5c561934e089/System.Windows.Forms.dll
+----------------------------------------
+System
+    アセンブリ バージョン: 2.0.0.0
+    Win32 バージョン: 2.0.50727.5467 (Win7SP1GDR.050727-5400)
+    コードベース: file:///C:/Windows/assembly/GAC_MSIL/System/2.0.0.0__b77a5c561934e089/System.dll
+----------------------------------------
+System.Drawing
+    アセンブリ バージョン: 2.0.0.0
+    Win32 バージョン: 2.0.50727.5467 (Win7SP1GDR.050727-5400)
+    コードベース: file:///C:/Windows/assembly/GAC_MSIL/System.Drawing/2.0.0.0__b03f5f7f11d50a3a/System.Drawing.dll
+----------------------------------------
+System.Core
+    アセンブリ バージョン: 3.5.0.0
+    Win32 バージョン: 3.5.30729.5420 built by: Win7SP1
+    コードベース: file:///C:/Windows/assembly/GAC_MSIL/System.Core/3.5.0.0__b77a5c561934e089/System.Core.dll
+----------------------------------------
+OggVorbis
+    アセンブリ バージョン: 1.0.4656.10
+    Win32 バージョン: 1, 0, 0, 1
+    コードベース: file:///D:/project/Sengoku/data/sound/se/OggVorbis.DLL
+----------------------------------------
+mscorlib.resources
+    アセンブリ バージョン: 2.0.0.0
+    Win32 バージョン: 2.0.50727.5472 (Win7SP1GDR.050727-5400)
+    コードベース: file:///C:/Windows/Microsoft.NET/Framework/v2.0.50727/mscorlib.dll
+----------------------------------------
+msvcm80
+    アセンブリ バージョン: 8.0.50727.6195
+    Win32 バージョン: 8.00.50727.6195
+    コードベース: file:///C:/Windows/WinSxS/x86_microsoft.vc80.crt_1fc8b3b9a1e18e3b_8.0.50727.6195_none_d09154e044272b9a/msvcm80.dll
+----------------------------------------
+System.Windows.Forms.resources
+    アセンブリ バージョン: 2.0.0.0
+    Win32 バージョン: 2.0.50727.5420 (Win7SP1.050727-5400)
+    コードベース: file:///C:/Windows/assembly/GAC_MSIL/System.Windows.Forms.resources/2.0.0.0_ja_b77a5c561934e089/System.Windows.Forms.resources.dll
+----------------------------------------
+
+************** JIT デバッグ **************
+Just-In-Time (JIT) デバッグを有効にするには、このアプリケーション、
+またはコンピュータ (machine.config) の構成ファイルの jitDebugging 
+値を system.windows.forms セクションで設定しなければなりません。
+アプリケーションはまた、デバッグを有効にしてコンパイルされなければ
+なりません。
+
+例:
+
+<configuration>
+    <system.windows.forms jitDebugging="true" />
+</configuration>
+
+JIT デバッグが有効なときは、このダイアログ ボックスで処理するよりも、
+ハンドルされていない例外はすべてコンピュータに登録された
+JIT デバッガに設定されなければなりません。
+
+
