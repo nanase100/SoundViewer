@@ -25,7 +25,7 @@ namespace SEViewer
 		private soundPlayer			m_soundPlayer	= null;
 		
 		private string				m_exePath		= "";
-		
+		private string				m_searchStr		= "";
 		private List<string>		m_showFileList  = new List<string>();
 		private List<string>		m_fileList		= new List<string>();
 
@@ -73,25 +73,21 @@ namespace SEViewer
             System.Math.Max(10, System.Math.Min(5, 8));
 
 			//----------------------------------------------------------------
-			//System.IO.Directory.SetCurrentDirectory("E:/ito-develop/クルセイドハート/svn/Tool/SEViwer");
 			m_exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			m_exePath = MainFunction.Add_EndPathSeparator(m_exePath);
 
-			
-
-            checkBox2.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[0]);
-            checkBox3.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[1]);
-            checkBox4.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[2]);
-            checkBox6.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[3]);
-			checkBox8.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[4]);
+            tabCategorySE.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[0]);
+            tabCategoryBGM.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[1]);
+            tabCategoryBGV.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[2]);
+            tabCategoryUSEFULL.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[3]);
+			tabCategoryFAV.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[4]);
 
 			//----------------------------------------------------------------
 
-			string[]		   m_fileListTmpGet;//TODO:test
+			string[]		   m_fileListTmpGet;
 
             for (int i = 0; i < DataSetManager.MAX_CATEGORY; i++)
 			{
-
 				//まずはフォルダ内のwavファイルを全て列挙
 				m_fileListTmpGet = SEViewer.MainFunction.Get_PathFromDirectroy(Program.m_data.soundPath[i], "*.wav", true);
 
@@ -119,7 +115,6 @@ namespace SEViewer
 			}
 			//----------------------------------------------------------------
 
-
             UpdateGenreComboBox(0);
             UpdateGenreComboBox2(1);
 
@@ -128,15 +123,15 @@ namespace SEViewer
 
 			UpdateList("");
 
-			comboBox2.SelectedIndex = 1;
+			copyStrSelect.SelectedIndex = 1;
 
 			//----------------------------------------------------------------
-			LoadSet();
+			SetListViewItem();
 
 			//ListViewItemComparerの作成と設定
 			listViewItemSorter = new ListViewItemComparer();
 			listViewItemSorter.ColumnModes =
-			   new ListViewItemComparer.ComparerMode[]
+			new ListViewItemComparer.ComparerMode[]
 			{
 				ListViewItemComparer.ComparerMode.String,
 				ListViewItemComparer.ComparerMode.String,
@@ -146,9 +141,7 @@ namespace SEViewer
 			//ListViewItemSorterを指定する
 			listView1.ListViewItemSorter = listViewItemSorter;
 
-	//		comboBox3.DropDownHeight = listView1.Height - (groupBox4.Location.Y + comboBox3.Location.Y);
-
-			//updateProcssList();
+			SetTreeViewItem(0);
 		}
 
 
@@ -158,11 +151,8 @@ namespace SEViewer
             comboBox3.Items.Clear();
             comboBox3.Items.Add("ジャンル指定なし");
 
-
             foreach (string genre in Program.m_data.m_genreList[id])
                 comboBox3.Items.Add(genre);
-
-                
 
             comboBox3.SelectedIndex = 0;
         }
@@ -203,31 +193,23 @@ namespace SEViewer
 			m_showFileList.Clear();
             bool genreCheck = false;
 
-			try
+			Regex regGeter = new Regex(regPattern, RegexOptions.IgnoreCase);
+
+			foreach (string tmpFilePath in m_fileList)
 			{
-				Regex regGeter = new Regex(regPattern, RegexOptions.IgnoreCase);
+                genreCheck = CheckGenreCrossFit(Program.m_data.GetGenre(tmpFilePath, m_soundModeType), Program.m_data.GetGenre2(tmpFilePath, m_soundModeType),comboBox3.SelectedItem.ToString(), comboBox5.SelectedItem.ToString());
 
-				foreach (string tmpFilePath in m_fileList)
+                if ( (regPattern == "" || 
+					( comboBox4.SelectedIndex == 0 && regGeter.IsMatch(Program.m_data.GetSummary(tmpFilePath, m_soundModeType))  )||
+					( comboBox4.SelectedIndex == 1 && regGeter.IsMatch(tmpFilePath)
+                    ))
+                    && genreCheck
+                )
 				{
-                    genreCheck = CheckGenreCrossFit(Program.m_data.GetGenre(tmpFilePath, m_soundModeType), Program.m_data.GetGenre2(tmpFilePath, m_soundModeType),comboBox3.SelectedItem.ToString(), comboBox5.SelectedItem.ToString());
-
-                    if ( (regPattern == "" || 
-						
-						( comboBox4.SelectedIndex == 0 && regGeter.IsMatch(Program.m_data.GetSummary(tmpFilePath, m_soundModeType))  )||
-						( comboBox4.SelectedIndex == 1 && regGeter.IsMatch(tmpFilePath)
-                        ))
-                        && genreCheck
-                    )
-					{
-	
-                         m_showFileList.Add(tmpFilePath);
-					
-					}
+					m_showFileList.Add(tmpFilePath);
 				}
 			}
-			catch
-			{
-			}
+
 		}
 
 
@@ -274,7 +256,7 @@ namespace SEViewer
 			// WM_PASTEメッセージ送信
 			//bresult = PostMessage(hWnd, 0x100, wParam, lParam);
 
-			if (checkBox1.Checked)
+			if (menuItemCheck1.Checked)
 			{
 				bresult = PostMessage(hWnd, 0x0302, lParam, lParam);
 			}
@@ -285,34 +267,27 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		//ロードしてデータセットと合わせてリストビューにセットする
 		//-----------------------------------------------------------------------------------------------
-		public void LoadSet()
+		public void SetListViewItem()
 		{
-
 			if (m_receiveEventFlg == true) return;
 
+			listView1.BeginUpdate();
 			listView1.Items.Clear();
 			listView1.ListViewItemSorter = null;
 
 			foreach (string filePath in m_showFileList)
 			{
-
 				//if( Program.m_data.GetDataSet(m_soundModeType)[filePath].m_isExist == false ) continue;
-
 
 				if (Program.m_data.GetSummary(filePath, m_soundModeType) == "")
 					continue;
 
-
 				System.Windows.Forms.ListViewItem tmpItem = listView1.Items.Add(filePath);
-
-				
-				
+			
 				if (Program.m_data.GetDataSet(m_soundModeType)[filePath].m_isExist == false)
 				{
 					tmpItem.ForeColor = Color.Red;
-				}
-				else
-				{
+				}else{
 					tmpItem.ForeColor = Color.Black;
 				}
 				tmpItem.SubItems.Add(Program.m_data.GetGenre(  filePath,m_soundModeType));
@@ -320,14 +295,40 @@ namespace SEViewer
                 tmpItem.SubItems.Add(Program.m_data.GetSummary(filePath,m_soundModeType));
 				
 			}
-
-			textBox1.Text = Program.m_data.pattern1;
-			textBox2.Text = Program.m_data.pattern2;
-			textBox3.Text = Program.m_data.pattern3;
-			textBox4.Text = Program.m_data.pattern4;
-			textBox5.Text = Program.m_data.pattern5;
-
+			int id = copyStrSelect.SelectedIndex-1;
+			m_receiveEventFlg = true;
+			if( id >= 0 ){
+				textCopyStr.Text = Program.m_data.copyStr[id];
+			}else{
+				textCopyStr.Text = "";
+			}
+			m_receiveEventFlg = false;
 			listView1.ListViewItemSorter = listViewItemSorter;
+			listView1.EndUpdate();
+		}
+
+		//-----------------------------------------------------------------------------------------------
+		//
+		//
+		public void SetTreeViewItem( int soundCategory )
+		{
+			//int loopCount = Program.m_data.m_genreList.Count();
+			//for( int i = 0; i < ; i++ )
+			//{
+			//	treeView1.Nodes.Add( Program.m_data.m_genreList[i].ToString());
+			//}
+			
+			treeView1.BeginUpdate();
+			treeView1.Nodes.Clear();
+
+			TreeNode topNode = treeView1.Nodes.Add( "全て表示");
+
+			foreach (string genre in Program.m_data.m_genreList[soundCategory])
+                topNode.Nodes.Add(genre);
+
+			topNode.Expand();
+			treeView1.SelectedNode = topNode;
+			treeView1.EndUpdate();
 		}
 
 		//-----------------------------------------------------------------------------------------------
@@ -337,9 +338,8 @@ namespace SEViewer
 		{
             string m_exePath = System.IO.Directory.GetCurrentDirectory();
 			m_exePath = MainFunction.Add_EndPathSeparator(m_exePath);
-			Program.m_data.Save(m_exePath );
+			Program.m_data.settingSave(m_exePath + "option.txt" );
 			Program.m_data.SaveFavList();
-
 		}
 
 		//-----------------------------------------------------------------------------------------------
@@ -363,7 +363,6 @@ namespace SEViewer
 			this.Text = copyFileName;
 		//	this.textBoxFileName.Text = listView1.SelectedItems[0].Text;
 		//	this.textBoxSammary.Text = listView1.SelectedItems[0].SubItems[2].Text;
-            
 
 			//右クリックならばクリップボードにコピー
 			if (e.Button == System.Windows.Forms.MouseButtons.Right)
@@ -372,26 +371,9 @@ namespace SEViewer
                 if ((Control.ModifierKeys & Keys.Control) == Keys.Control || e.Button == MouseButtons.Middle)
                 {
                     if (copyFileName != "") System.Windows.Forms.Clipboard.SetText(copyFileName);
-                }
-                else {
+                }else{
                     copyStringToClipboard(copyFileName);
                 }
-                
-			}
-		  
-		}
-
-		//-----------------------------------------------------------------------------------------------
-		//コンボボックス入力
-		//-----------------------------------------------------------------------------------------------
-		private void comboBox1_KeyPress(object sender, KeyPressEventArgs e)
-		{
-			if (e.KeyChar == (char)Keys.Enter)
-			{
-				((ComboBox)sender).Items.Add( comboBox1.Text );
-
-				UpdateList(comboBox1.Text);
-				LoadSet();
 			}
 		}
 
@@ -407,22 +389,10 @@ namespace SEViewer
 
 			this.Text = copyFileName;
 			
-			if( checkBox5.Checked )
+			if( menuItemCheck4.Checked )
 			{
 				PlaySelectSound();
 			}
-
-//			this.textBoxFileName.Text = listView1.SelectedItems[0].Text;
-	//		this.textBoxSammary.Text  = listView1.SelectedItems[0].SubItems[1].Text;
-		}
-
-		//-----------------------------------------------------------------------------------------------
-		//コンボボックス文字変更
-		//-----------------------------------------------------------------------------------------------
-		private void comboBox1_TextChanged(object sender, EventArgs e)
-		{
-			UpdateList(comboBox1.Text);
-			LoadSet();
 		}
 
 		//-----------------------------------------------------------------------------------------------
@@ -435,7 +405,6 @@ namespace SEViewer
 
 		private void PlaySelectSound()
 		{
-
 			timer1.Stop();
 
 			bool isLoop = checkBox9.Checked;
@@ -499,6 +468,11 @@ namespace SEViewer
             Program.m_data.m_col3Size = listView1.Columns[2].Width;
             Program.m_data.m_col4Size = listView1.Columns[3].Width;
 
+			Program.m_data.m_toolOption[0] = (menuItemCheck1.Checked?1:0);
+			Program.m_data.m_toolOption[1] = (menuItemCheck2.Checked?1:0);
+			Program.m_data.m_toolOption[2] = (menuItemCheck3.Checked?1:0);
+			Program.m_data.m_toolOption[3] = (menuItemCheck4.Checked?1:0);
+
             for (int i = 0; i < HOTKEY_COUNT; i++)
 			{
 				hotKey[i].Dispose();
@@ -519,36 +493,12 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		private void textBox1_TextChanged(object sender, EventArgs e)
 		{
-			Program.m_data.pattern1 = textBox1.Text;
+			if( m_receiveEventFlg ) return;
+
+			int id = copyStrSelect.SelectedIndex-1;
+			Program.m_data.copyStr[id] = textCopyStr.Text;
 		}
-
-		//-----------------------------------------------------------------------------------------------
-		//コピー機能の文字列変更イベント
-		//-----------------------------------------------------------------------------------------------
-		private void textBox2_TextChanged(object sender, EventArgs e)
-		{
-			Program.m_data.pattern2 = textBox2.Text;
-		}
-
-		//-----------------------------------------------------------------------------------------------
-		//コピー機能の文字列変更イベント
-		//-----------------------------------------------------------------------------------------------
-		private void textBox3_TextChanged(object sender, EventArgs e)
-		{
-			Program.m_data.pattern3 = textBox3.Text;
-		}
-
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-            Program.m_data.pattern4 = textBox4.Text;
-        }
-
-
-        private void textBox5_TextChanged(object sender, EventArgs e)
-        {
-            Program.m_data.pattern5 = textBox5.Text;
-        }
-
+		
         //-----------------------------------------------------------------------------------------------
         //フォームロードイベント
         //-----------------------------------------------------------------------------------------------
@@ -557,15 +507,22 @@ namespace SEViewer
 			// WaveOutの状態を気にしつつ、データを出力するためのタイマー
 			timer1.Interval = 10;
 
-            this.Left = Program.m_data.m_left;
-            this.Top = Program.m_data.m_top;
-            this.Width = Program.m_data.m_width;
+            this.Left	= Program.m_data.m_left;
+            this.Top	= Program.m_data.m_top;
+            this.Width	= Program.m_data.m_width;
             this.Height = Program.m_data.m_height;
 
             listView1.Columns[0].Width = Program.m_data.m_col1Size;
             listView1.Columns[1].Width = Program.m_data.m_col2Size;
             listView1.Columns[2].Width = Program.m_data.m_col3Size;
             listView1.Columns[3].Width = Program.m_data.m_col4Size;
+			
+			splitContainer1.SplitterDistance = Program.m_data.m_splitSize;
+
+			menuItemCheck1.Checked =	(Program.m_data.m_toolOption[0] == 1 ? true : false );
+			menuItemCheck2.Checked =	(Program.m_data.m_toolOption[1] == 1 ? true : false );
+			menuItemCheck3.Checked =	(Program.m_data.m_toolOption[2] == 1 ? true : false );
+			menuItemCheck4.Checked =	(Program.m_data.m_toolOption[3] == 1 ? true : false );
         }
 
 		//-----------------------------------------------------------------------------------------------
@@ -634,7 +591,7 @@ namespace SEViewer
 				}
 				else
 				{
-					System.Windows.Forms.MessageBox.Show("F1によるお気にいり追加機能を使用するには、いずれかの音を選んでからF1を押して下さい");
+					System.Windows.Forms.MessageBox.Show("音をお気に入りリストへ追加するには、いずれかの音を選んでからF1を押して下さい");
 				}
 
 
@@ -668,9 +625,9 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			UpdateList(comboBox1.Text);
+			UpdateList(m_searchStr);
             UpdateGenreComboBox2(m_soundModeType,true);
-            LoadSet();
+            SetListViewItem();
 		}
 
 
@@ -696,27 +653,16 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		private void copyStringToClipboard(string copyFileName, int a_mode = -1)
 		{
-			int mode = comboBox2.SelectedIndex;
+			int mode = copyStrSelect.SelectedIndex;
 			if (a_mode != -1) mode = a_mode;
 
-			//高尾さん要望。設定を無視して特定の文字列(ここではファイル名)をコピーする場合の処理追加
-			if( copyFileName.IndexOf('-') == 0 )
-			{
-				copyFileName = copyFileName.Substring(1);
-			}
-			else
-			{
-				switch (mode)
-				{
-					case 1: copyFileName = textBox1.Text.Replace("%s", copyFileName); break;
-					case 2: copyFileName = textBox2.Text.Replace("%s", copyFileName); break;
-					case 3: copyFileName = textBox3.Text.Replace("%s", copyFileName); break;
-					case 4: copyFileName = textBox4.Text.Replace("%s", copyFileName); break;
-					case 5: copyFileName = textBox5.Text.Replace("%s", copyFileName); break;
-				}
-			}
-			
+			string changeStr = "";
 
+			if( mode == 0 ) changeStr = "%s";
+			else			changeStr = Program.m_data.copyStr[mode-1];
+
+			copyFileName = changeStr.Replace("%s", copyFileName); 
+			
 			copyFileName = copyFileName.Replace("%n", System.Environment.NewLine);
 
 			copyFileName = copyFileName.Replace("%i", listView1.SelectedItems[0].SubItems[3].Text);
@@ -739,7 +685,6 @@ namespace SEViewer
 		void hotKey_HotKeyPush01(object sender, EventArgs e)
 		{
 			//MessageBox.Show("ホットキーが押されました。");
-			//copyStringToClipboard(copyFileName);
 			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
 			copyStringToClipboard(copyFileName,1);		  
 		}
@@ -750,7 +695,6 @@ namespace SEViewer
 		void hotKey_HotKeyPush02(object sender, EventArgs e)
 		{
 			//MessageBox.Show("ホットキーが押されました。");
-			//copyStringToClipboard(copyFileName);
 			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
 			copyStringToClipboard(copyFileName,2);
 		}
@@ -761,7 +705,6 @@ namespace SEViewer
 		void hotKey_HotKeyPush03(object sender, EventArgs e)
 		{
 			//MessageBox.Show("ホットキーが押されました。");
-			//copyStringToClipboard(copyFileName);
 			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
 			copyStringToClipboard(copyFileName,3);
 		}
@@ -772,7 +715,6 @@ namespace SEViewer
 		void hotKey_HotKeyPush04(object sender, EventArgs e)
 		{
 			//MessageBox.Show("ホットキーが押されました。");
-			//copyStringToClipboard(copyFileName);
 			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
 			copyStringToClipboard(copyFileName,4);
 		}
@@ -783,8 +725,6 @@ namespace SEViewer
 		void hotKey_HotKeyPush05(object sender, EventArgs e)
 		{
 			//MessageBox.Show("ホットキーが押されました。");
-			//copyStringToClipboard(copyFileName);
-		
 			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
 			copyStringToClipboard(copyFileName,5);
 			
@@ -798,171 +738,75 @@ namespace SEViewer
 			System.Windows.Forms.CheckBox tmp = (System.Windows.Forms.CheckBox)sender;
 			if (tmp.Checked == true)
 			{
-				m_receiveEventFlg = true;
-				m_soundModeType = 0;
-
-                UpdateGenreComboBox(0);
-                UpdateGenreComboBox2(0);
-
-                checkBox3.CheckState = CheckState.Unchecked;
-				checkBox4.CheckState = CheckState.Unchecked;
-                checkBox6.CheckState = CheckState.Unchecked;
-				checkBox8.CheckState = CheckState.Unchecked;
-
-				NewCreateFileList();
-				UpdateList(comboBox1.Text);
-				m_receiveEventFlg = false;
-				LoadSet();
-				
-				if( checkBox7.Checked == true )
-				{
-					comboBox2.SelectedIndex = 1;
-				}
+				ChangeSoundTab( 0 );
 			}
 			
 		}
 
 		private void checkBox3_CheckedChanged(object sender, EventArgs e)
 		{
-
 			System.Windows.Forms.CheckBox tmp = (System.Windows.Forms.CheckBox)sender;
-			if (tmp.Checked == true)
-			{
-				m_receiveEventFlg = true;
-				UpdateGenreComboBox(1);
-                UpdateGenreComboBox2(1);
-
-                m_soundModeType = 1;
-				checkBox8.CheckState = CheckState.Unchecked;
-				checkBox2.CheckState = CheckState.Unchecked;
-				checkBox4.CheckState = CheckState.Unchecked;
-                checkBox6.CheckState = CheckState.Unchecked;
-
-				NewCreateFileList();
-				UpdateList(comboBox1.Text);
-				m_receiveEventFlg = false;
-				LoadSet();
-				
-				if( checkBox7.Checked == true )
-				{
-					comboBox2.SelectedIndex = 2;
-				}
-			}
+			if (tmp.Checked == true) ChangeSoundTab( 1 );
 		}
 
 		private void checkBox4_CheckedChanged(object sender, EventArgs e)
 		{
-            
-
 			System.Windows.Forms.CheckBox tmp = (System.Windows.Forms.CheckBox)sender;
-			if (tmp.Checked == true)
-			{
-				m_receiveEventFlg = true;
-
-				UpdateGenreComboBox(2);
-                UpdateGenreComboBox2(2);
-
-                m_soundModeType = 2;
-				checkBox8.CheckState = CheckState.Unchecked;
-				checkBox3.CheckState = CheckState.Unchecked;
-				checkBox2.CheckState = CheckState.Unchecked;
-                checkBox6.CheckState = CheckState.Unchecked;
-
-				NewCreateFileList();
-				UpdateList(comboBox1.Text);
-				m_receiveEventFlg = false;
-				LoadSet();
-				
-				if( checkBox7.Checked == true )
-				{
-					comboBox2.SelectedIndex = 3;
-				}
-			}
+			if (tmp.Checked == true) ChangeSoundTab( 2 );
 		}
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
         {
             System.Windows.Forms.CheckBox tmp = (System.Windows.Forms.CheckBox)sender;
-            if (tmp.Checked == true)
-            {
-				m_receiveEventFlg = true;
-				UpdateGenreComboBox(3);
-                UpdateGenreComboBox2(3);
-
-                m_soundModeType = 3;
-				checkBox8.CheckState = CheckState.Unchecked;
-				checkBox4.CheckState = CheckState.Unchecked;
-                checkBox3.CheckState = CheckState.Unchecked;
-                checkBox2.CheckState = CheckState.Unchecked;
-
-                NewCreateFileList();
-                UpdateList(comboBox1.Text);
-				m_receiveEventFlg = false;
-				LoadSet();
-
-                if (checkBox7.Checked == true)
-                {
-                    comboBox2.SelectedIndex = 4;
-                }
-            }
+            if (tmp.Checked == true) ChangeSoundTab( 3 );
         }
 
 		private void checkBox8_CheckedChanged(object sender, EventArgs e)
 		{
 			System.Windows.Forms.CheckBox tmp = (System.Windows.Forms.CheckBox)sender;
-			if (tmp.Checked == true)
-			{
-				m_receiveEventFlg = true;
-				UpdateGenreComboBox(4);
-				UpdateGenreComboBox2(4);
+			if (tmp.Checked == true) ChangeSoundTab( 4 );
 
-				m_soundModeType = 4;
-				checkBox6.CheckState = CheckState.Unchecked;
-				checkBox4.CheckState = CheckState.Unchecked;
-				checkBox3.CheckState = CheckState.Unchecked;
-				checkBox2.CheckState = CheckState.Unchecked;
-
-				NewCreateFileList();
-				UpdateList(comboBox1.Text);
-				m_receiveEventFlg = false;
-
-				LoadSet();
-
-			}
 		}
 
+		private void ChangeSoundTab( int soundCategory )
+		{
+			m_receiveEventFlg	= true;
+			m_soundModeType		= soundCategory;
+
+            UpdateGenreComboBox(soundCategory);
+            UpdateGenreComboBox2(soundCategory);
+
+			tabCategorySE.CheckState		= ( soundCategory == 0 ? CheckState.Checked : CheckState.Unchecked );
+            tabCategoryBGM.CheckState		= ( soundCategory == 1 ? CheckState.Checked : CheckState.Unchecked );
+			tabCategoryBGV.CheckState		= ( soundCategory == 2 ? CheckState.Checked : CheckState.Unchecked );
+            tabCategoryUSEFULL.CheckState	= ( soundCategory == 3 ? CheckState.Checked : CheckState.Unchecked );
+			tabCategoryFAV.CheckState		= ( soundCategory == 4 ? CheckState.Checked : CheckState.Unchecked );
+
+			NewCreateFileList();
+			UpdateList(m_searchStr);
+			m_receiveEventFlg = false;
+			SetListViewItem();
+				
+			if( menuItemCheck3.Checked == true )
+			{
+				copyStrSelect.SelectedIndex = soundCategory + 1;
+			}
+
+			SetTreeViewItem(soundCategory);
+		}
 
 
 		private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			UpdateList(comboBox1.Text);
-			LoadSet();
+			UpdateList(m_searchStr);
+			SetListViewItem();
 		}
 
         private void label2_Click(object sender, EventArgs e)
         {
 
         }
-
-        private void button3_Click_1(object sender, EventArgs e)
-        {
-             System.Windows.Forms.MessageBox.Show( "■コピー時に置き換えられる、特殊な文字の一覧です。\n\n" +
-                                                    "% s　：　ファイル名に置き換わります。\n" +
-                                                    "% n　：　改行に置き換わります。\n" +
-                                                    "% t　：　タブに置き換わります。\n" +
-                                                    "% i　：　SEの内容説明文に置き換わります。\n" +
-                                                    "% g　：　SEのジャンル名に置き換わります。\n" +
-                                                    "\n" +
-                                                    "\n" +
-
-                                                    "■便利な操作等について\n" +
-                                                    "\n" +
-                                                    "Ctrキー＋数字 1～5キー：コピー文の1から5番を直接指定して即、コピーします。\n"+
-                                                    "\n" +
-                                                    "\n"
-
-                                                    , "コピー文のヘルプ");
-        }
+		
 
         private void checkBox2_MouseDown(object sender, MouseEventArgs e)
         {
@@ -1006,8 +850,8 @@ namespace SEViewer
 
         private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateList(comboBox1.Text);
-			LoadSet();
+            UpdateList(m_searchStr);
+			SetListViewItem();
         }
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
@@ -1018,66 +862,156 @@ namespace SEViewer
 
 
 
-
-
-
-
-
-
-
-
-		/*
-		private void sendKey()
+		private void menuItemCombo1_TextChanged(object sender, EventArgs e)
 		{
-			// 選択しているプロセスをアクティブ
-			int pid = int.Parse(listBox1.SelectedValue.ToString());
-			Process p = Process.GetProcessById(pid);
-			SetForegroundWindow(p.MainWindowHandle);
-			// キーストロークを送信
-			//SendKeys.Send(textBox1.Text);
-			
-			//Ctrl+V を送信
-			SendKeys.Send("^v");
+			m_searchStr = menuItemCombo1.Text;
+			UpdateList(m_searchStr);
+			SetListViewItem();
 		}
 
-		private void updateProcssList()
+		private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			// プロセス一覧を更新
-			listBox1.DataSource = ProcessTable();
-			listBox1.ValueMember = "PID";
-			listBox1.DisplayMember = "NAME";
-		}
-		private DataTable ProcessTable()
-		{
-			// プロセスのリストを取得
-			// http://d.hatena.ne.jp/tomoemon/20080430/p2
-			Process[] ps = Process.GetProcesses();
-			Array.Sort(ps, new ProcComparator());
-
-			DataTable table = new DataTable();
-			table.Columns.Add("PID");
-			table.Columns.Add("NAME");
-
-			foreach (Process p in ps)
-			{
-				DataRow row = table.NewRow();
-				row.SetField<int>("PID", p.Id);
-				row.SetField<string>("NAME", p.ProcessName + " - " + p.MainWindowTitle);
-
-				table.Rows.Add(row);
+			m_receiveEventFlg = true;
+			int id = copyStrSelect.SelectedIndex-1;
+			if( id == -1 ){
+				textCopyStr.Text = "";
+				textCopyStr.Enabled = false;
+			}else{
+				textCopyStr.Text = Program.m_data.copyStr[id];
+				textCopyStr.Enabled = true;
 			}
-			table.AcceptChanges();
-
-			return table;
+			m_receiveEventFlg = false;
 		}
+
 		
 
-		private void listBox1_DoubleClick(object sender, EventArgs e)
+		private void menuItemCheck1_Click(object sender, EventArgs e)
 		{
-			sendKey();
+			menuItemCheck1.Checked = !menuItemCheck1.Checked;
 		}
-		// .....
-		 * */
+
+		private void menuItemCheck2_Click(object sender, EventArgs e)
+		{
+			menuItemCheck2.Checked = !menuItemCheck2.Checked;
+		}
+
+		private void menuItemCheck3_Click(object sender, EventArgs e)
+		{
+			menuItemCheck3.Checked = !menuItemCheck3.Checked;
+		}
+
+		private void menuItemCheck4_Click(object sender, EventArgs e)
+		{
+			menuItemCheck4.Checked = !menuItemCheck4.Checked;
+		}
+
+		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+		{
+			if( e.Node.Text == "全て表示" ) comboBox3.SelectedIndex = 0;
+			else							comboBox3.SelectedIndex = e.Node.Index+1;
+			
+			//UpdateList( m_searchStr );
+            //SetListViewItem();
+
+		}
+
+		private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			Program.m_data.m_splitSize = splitContainer1.SplitterDistance;
+
+			if( this.Width > 930 ){
+				tabCategorySE.Left = Program.m_data.m_splitSize + 16;
+				tabCategoryBGM.Left		= tabCategorySE.Left + 60;
+				tabCategoryBGV.Left		= tabCategorySE.Left + 120;
+				tabCategoryUSEFULL.Left = tabCategorySE.Left + 180;
+				tabCategoryFAV.Left		= tabCategorySE.Left + 240;
+			}else{
+				int leftOffset = 930 - this.Width;
+				tabCategorySE.Left = Program.m_data.m_splitSize + 16 - leftOffset;
+				tabCategoryBGM.Left		= tabCategorySE.Left + 60;
+				tabCategoryBGV.Left		= tabCategorySE.Left + 120;
+				tabCategoryUSEFULL.Left = tabCategorySE.Left + 180;
+				tabCategoryFAV.Left		= tabCategorySE.Left + 240;
+
+			}
+		}
+
+		private void splitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
+		{
+			int harfWidth = splitContainer1.Panel2.Width / 2 - 6;
+			comboBox3.Width = harfWidth;
+			comboBox5.Left = harfWidth + 10;
+			comboBox5.Width = harfWidth;
+		}
+
+		private void splitContainer1_Panel1_SizeChanged(object sender, EventArgs e)
+		{
+			int stopBtnWidth = groupBox1.Width * 7 / 10 - 6;
+			int playBtnWidth = groupBox1.Width - stopBtnWidth  - 20;
+			button1.Width = playBtnWidth;
+			button2.Left = playBtnWidth + 10;
+			button2.Width = stopBtnWidth;
+		}
+
+		private void menuItemCombo1_KeyDown(object sender, KeyEventArgs e)
+		{
+			if( e.KeyCode == Keys.Enter ){
+				menuItemCombo1.Items.Add(menuItemCombo1.Text);
+			}
+		}
+
+		/*
+private void sendKey()
+{
+// 選択しているプロセスをアクティブ
+int pid = int.Parse(listBox1.SelectedValue.ToString());
+Process p = Process.GetProcessById(pid);
+SetForegroundWindow(p.MainWindowHandle);
+// キーストロークを送信
+//SendKeys.Send(textBox1.Text);
+
+//Ctrl+V を送信
+SendKeys.Send("^v");
+}
+
+private void updateProcssList()
+{
+// プロセス一覧を更新
+listBox1.DataSource = ProcessTable();
+listBox1.ValueMember = "PID";
+listBox1.DisplayMember = "NAME";
+}
+private DataTable ProcessTable()
+{
+// プロセスのリストを取得
+// http://d.hatena.ne.jp/tomoemon/20080430/p2
+Process[] ps = Process.GetProcesses();
+Array.Sort(ps, new ProcComparator());
+
+DataTable table = new DataTable();
+table.Columns.Add("PID");
+table.Columns.Add("NAME");
+
+foreach (Process p in ps)
+{
+DataRow row = table.NewRow();
+row.SetField<int>("PID", p.Id);
+row.SetField<string>("NAME", p.ProcessName + " - " + p.MainWindowTitle);
+
+table.Rows.Add(row);
+}
+table.AcceptChanges();
+
+return table;
+}
+
+
+private void listBox1_DoubleClick(object sender, EventArgs e)
+{
+sendKey();
+}
+// .....
+* */
 	}
 
 

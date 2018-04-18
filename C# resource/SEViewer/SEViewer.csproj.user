@@ -11,7 +11,7 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <StartWorkingDirectory>D:\ito-develop\真・恋姫†無双シリーズ\真・恋姫†無双革命 呉\svn\_report\SE・BGMツール</StartWorkingDirectory>
+    <StartWorkingDirectory>D:\ito-develop\真・恋姫†無双シリーズ\真・恋姫†無双革命 呉\svn\_report\新しいフォルダー</StartWorkingDirectory>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
