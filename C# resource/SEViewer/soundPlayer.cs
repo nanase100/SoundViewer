@@ -12,7 +12,7 @@ using Tsukikage.WinMM.WaveIO;
 using Tsukikage.Audio;
 
 
-namespace SEViewer
+namespace SoundViewer
 {
     //-----------------------------------------------------------------------------------------------
     //

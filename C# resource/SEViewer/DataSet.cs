@@ -9,7 +9,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Drawing;
 
-namespace SEViewer
+namespace SoundViewer
 {
     class DataSet
     {

@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace SEViewer
+namespace SoundViewer
 {
    
 
@@ -28,6 +28,8 @@ namespace SEViewer
 		private string				m_searchStr		= "";
 		private List<string>		m_showFileList  = new List<string>();
 		private List<string>		m_fileList		= new List<string>();
+
+		private List<string>		m_selectGenreList = new List<string>();
 
 		private bool m_receiveEventFlg = false;
 
@@ -83,7 +85,7 @@ namespace SEViewer
             for (int i = 0; i < DataSetManager.MAX_CATEGORY; i++)
 			{
 				//まずはフォルダ内のwavファイルを全て列挙
-				m_fileListTmpGet = SEViewer.MainFunction.Get_PathFromDirectroy(Program.m_data.soundPath[i], "*.wav", true);
+				m_fileListTmpGet = SoundViewer.MainFunction.Get_PathFromDirectroy(Program.m_data.soundPath[i], "*.wav", true);
 
 				foreach (string fileName in m_fileListTmpGet)
 				{
@@ -95,7 +97,7 @@ namespace SEViewer
 				m_fileList.Clear();
 
 				//まずはフォルダ内のoggファイルを全て列挙
-				m_fileListTmpGet = SEViewer.MainFunction.Get_PathFromDirectroy(Program.m_data.soundPath[i], "*.ogg", true);
+				m_fileListTmpGet = SoundViewer.MainFunction.Get_PathFromDirectroy(Program.m_data.soundPath[i], "*.ogg", true);
 
 				foreach (string fileName in m_fileListTmpGet)
 				{
@@ -108,9 +110,10 @@ namespace SEViewer
 
 			}
 			//----------------------------------------------------------------
+			
+			SetTreeViewItem(0);
 
-            UpdateGenreComboBox(0);
-            UpdateGenreComboBox2(1);
+            UpdateGenreComboBox2();
 
             comboBox4.SelectedIndex = 0;
 			NewCreateFileList();
@@ -134,49 +137,34 @@ namespace SEViewer
 
 			//ListViewItemSorterを指定する
 			listView1.ListViewItemSorter = listViewItemSorter;
-
-			SetTreeViewItem(0);
 		}
 
 
-        public void UpdateGenreComboBox(int id)
-        {
-            //ジャンルボックス初期化
-            comboBox3.Items.Clear();
-            comboBox3.Items.Add("ジャンル指定なし");
 
-            foreach (string genre in Program.m_data.m_genreList[id])
-                comboBox3.Items.Add(genre);
 
-            comboBox3.SelectedIndex = 0;
-        }
-
-        public void UpdateGenreComboBox2(int id, bool isDrawin = false)
+        public void UpdateGenreComboBox2()
         {
             //ジャンルボックス初期化;
 
             comboBox5.Items.Clear();
-            comboBox5.Items.Add("ジャンル指定なし");
-
+            comboBox5.Items.Add("ジャンル２指定なし");
+			
             string drawinStr;
             string genre2Str;
-            string checkStr = comboBox3.SelectedItem.ToString();
 
-            if(checkStr == "ジャンル指定なし") isDrawin =false;
+			for( int i = 0; i < Program.m_data.m_genreList2.Count(); i++ )
+				foreach (string genre in Program.m_data.m_genreList2[i])
+				{
+					drawinStr = genre.Split('∴')[0].ToString();
+					genre2Str = genre.Split('∴')[1].ToString();
+			
+					if( m_selectGenreList.IndexOf( drawinStr ) != -1 ){
+						if(comboBox5.Items.IndexOf(genre2Str) == -1 )
+							comboBox5.Items.Add(genre2Str);
+					}
+					
+				}
 
-            foreach (string genre in Program.m_data.m_genreList2[id])
-            {
-                drawinStr = genre.Split('∴')[0].ToString();
-                genre2Str = genre.Split('∴')[1].ToString();
-
-                if( !isDrawin || drawinStr == checkStr)
-                {
-                    if(comboBox5.Items.IndexOf(genre2Str) == -1 )
-                        comboBox5.Items.Add(genre2Str);
-                }
-            }
-
-            
             comboBox5.SelectedIndex = 0;
         }
         //-----------------------------------------------------------------------------------------------
@@ -191,7 +179,7 @@ namespace SEViewer
 
 			foreach (string tmpFilePath in m_fileList)
 			{
-                genreCheck = CheckGenreCrossFit(Program.m_data.GetGenre(tmpFilePath, m_soundModeType), Program.m_data.GetGenre2(tmpFilePath, m_soundModeType),comboBox3.SelectedItem.ToString(), comboBox5.SelectedItem.ToString());
+                genreCheck = CheckGenreCrossFit(Program.m_data.GetGenre(tmpFilePath, m_soundModeType), Program.m_data.GetGenre2(tmpFilePath, m_soundModeType), comboBox5.Text );
 
                 if ( (regPattern == "" || 
 					( comboBox4.SelectedIndex == 0 && regGeter.IsMatch(Program.m_data.GetSummary(tmpFilePath, m_soundModeType))  )||
@@ -207,15 +195,16 @@ namespace SEViewer
 		}
 
 
-        bool CheckGenreCrossFit( string check1, string check2, string selectGenre1, string selectGenre2)
+        bool CheckGenreCrossFit( string check1, string check2,  string selectGenre2)
         {
+			if( m_selectGenreList.Count == 0 ) return false;
+			if( check1 == null || check2 == null ) return false;
             //ジャンル1の絞込
-            if (selectGenre1 == "ジャンル指定なし" && selectGenre2 == "ジャンル指定なし") return true;
+            if (m_selectGenreList.IndexOf(check1) != -1 && selectGenre2 == "ジャンル２指定なし") return true;
 
-            if(selectGenre1 == "ジャンル指定なし" && (check2 == selectGenre1 || check2 == selectGenre2)) return true;
-            if(selectGenre2 == "ジャンル指定なし" && (check1 == selectGenre1 || check1 == selectGenre2)) return true;
-            if(check1 == selectGenre1 && check2 == selectGenre2)return true;
-            if(check2 == selectGenre1 && check1 == selectGenre2)return true;
+            
+            if(m_selectGenreList.IndexOf(check1) !=-1 && check2 == selectGenre2)return true;
+            if(m_selectGenreList.IndexOf(check2) !=-1 && check1 == selectGenre2)return true;
 
             return false;
 
@@ -311,7 +300,7 @@ namespace SEViewer
 			//{
 			//	treeView1.Nodes.Add( Program.m_data.m_genreList[i].ToString());
 			//}
-			
+			m_receiveEventFlg = true;
 			treeView1.BeginUpdate();
 			treeView1.Nodes.Clear();
 
@@ -321,7 +310,7 @@ namespace SEViewer
 
 			foreach (string genre in Program.m_data.m_genreList[soundCategory]){
                 tmpNode = topNode.Nodes.Add(genre);
-
+				tmpNode.Checked = true;
 				if( Program.m_data.m_genreColorList[soundCategory][i] != Color.Black ){
 					tmpNode.ForeColor = Program.m_data.m_genreColorList[soundCategory][i];
 					//tmpNode.ForeColor = Color.Black;
@@ -331,9 +320,13 @@ namespace SEViewer
 				}
 				i++;
 			}
+			GetSelectGenre();
+
+			m_receiveEventFlg = false;
 
 			topNode.Expand();
 			treeView1.SelectedNode = topNode;
+			
 			treeView1.EndUpdate();
 		}
 
@@ -637,16 +630,6 @@ namespace SEViewer
 		}
 
 
-		//-----------------------------------------------------------------------------------------------
-		//ジャンル設定のコンボボックス選択イベント
-		//-----------------------------------------------------------------------------------------------
-		private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			UpdateList(m_searchStr);
-            UpdateGenreComboBox2(m_soundModeType,true);
-            SetListViewItem();
-		}
-
 
 		//-----------------------------------------------------------------------------------------------
 		//リストビューのカラムクリックイベント
@@ -771,9 +754,8 @@ namespace SEViewer
 		{
 			m_receiveEventFlg	= true;
 			m_soundModeType		= soundCategory;
-
-            UpdateGenreComboBox(soundCategory);
-            UpdateGenreComboBox2(soundCategory);
+			
+            UpdateGenreComboBox2();
 
 			tabCategorySE.CheckState		= ( soundCategory == 0 ? CheckState.Checked : CheckState.Unchecked );
             tabCategoryBGM.CheckState		= ( soundCategory == 1 ? CheckState.Checked : CheckState.Unchecked );
@@ -813,7 +795,7 @@ namespace SEViewer
             {
                 string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 exePath = MainFunction.Add_EndPathSeparator(exePath);
-                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[0]);
+                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SoundViewer.Program.m_data.txtPath[0]);
             }
         }
 
@@ -823,7 +805,7 @@ namespace SEViewer
             {
                 string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 exePath = MainFunction.Add_EndPathSeparator(exePath);
-                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[1]);
+                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SoundViewer.Program.m_data.txtPath[1]);
             }
         }
 
@@ -833,7 +815,7 @@ namespace SEViewer
             {
                 string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 exePath = MainFunction.Add_EndPathSeparator(exePath);
-                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[2]);
+                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SoundViewer.Program.m_data.txtPath[2]);
             }
         }
 
@@ -843,7 +825,7 @@ namespace SEViewer
             {
                 string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 exePath = MainFunction.Add_EndPathSeparator(exePath);
-                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[3]);
+                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SoundViewer.Program.m_data.txtPath[3]);
             }
         }
 
@@ -906,13 +888,44 @@ namespace SEViewer
 
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			if( e.Node.Text == "全て表示" ) comboBox3.SelectedIndex = 0;
-			else							comboBox3.SelectedIndex = e.Node.Index+1;
-			
 			//UpdateList( m_searchStr );
             //SetListViewItem();
+			GetSelectGenre();
+		}
+
+		private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
+		{
+			if( m_receiveEventFlg == true ) return;
+
+			treeView1.BeginUpdate();
+			if( e.Node.Text == "全て表示" )
+			{
+				m_receiveEventFlg = true;
+				for( int i = 0; i < e.Node.Nodes.Count; i++)  e.Node.Nodes[i].Checked = e.Node.Checked;
+				m_receiveEventFlg = false;
+			}
+			treeView1.EndUpdate();
+
+			GetSelectGenre();
+
+			UpdateGenreComboBox2();
+			
+		}
+
+		private void GetSelectGenre()
+		{
+			m_selectGenreList.Clear();
+
+			
+
+			//チェックのついている項目をリストに追加していく
+			foreach( TreeNode tmpNode in treeView1.Nodes[0].Nodes )
+			{ 
+				if( tmpNode.Checked == true ) m_selectGenreList.Add( tmpNode.Text );
+			}
 
 		}
+
 
 		private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
 		{
@@ -938,7 +951,6 @@ namespace SEViewer
 		private void splitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
 		{
 			int harfWidth = splitContainer1.Panel2.Width / 2 - 6;
-			comboBox3.Width = harfWidth;
 			comboBox5.Left = harfWidth + 10;
 			comboBox5.Width = harfWidth;
 		}
@@ -958,6 +970,8 @@ namespace SEViewer
 				menuItemCombo1.Items.Add(menuItemCombo1.Text);
 			}
 		}
+
+		
 
 		/*
 private void sendKey()

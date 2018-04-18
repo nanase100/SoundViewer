@@ -1,4 +1,4 @@
-﻿namespace SEViewer
+﻿namespace SoundViewer
 {
     partial class Form1
     {
@@ -39,7 +39,6 @@
 			this.seGenre2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.button1 = new System.Windows.Forms.Button();
 			this.comboBox5 = new System.Windows.Forms.ComboBox();
-			this.comboBox3 = new System.Windows.Forms.ComboBox();
 			this.comboBox4 = new System.Windows.Forms.ComboBox();
 			this.textCopyStr = new System.Windows.Forms.TextBox();
 			this.copyStrSelect = new System.Windows.Forms.ComboBox();
@@ -158,18 +157,6 @@
 			this.comboBox5.Size = new System.Drawing.Size(325, 20);
 			this.comboBox5.TabIndex = 4;
 			this.comboBox5.SelectedIndexChanged += new System.EventHandler(this.comboBox5_SelectedIndexChanged);
-			// 
-			// comboBox3
-			// 
-			this.comboBox3.DropDownHeight = 300;
-			this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox3.FormattingEnabled = true;
-			this.comboBox3.IntegralHeight = false;
-			this.comboBox3.Location = new System.Drawing.Point(3, 3);
-			this.comboBox3.Name = "comboBox3";
-			this.comboBox3.Size = new System.Drawing.Size(276, 20);
-			this.comboBox3.TabIndex = 0;
-			this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
 			// 
 			// comboBox4
 			// 
@@ -423,10 +410,12 @@
 			this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.treeView1.CheckBoxes = true;
 			this.treeView1.Location = new System.Drawing.Point(3, 3);
 			this.treeView1.Name = "treeView1";
 			this.treeView1.Size = new System.Drawing.Size(296, 386);
 			this.treeView1.TabIndex = 28;
+			this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
 			// 
 			// splitContainer1
@@ -448,7 +437,6 @@
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.listView1);
 			this.splitContainer1.Panel2.Controls.Add(this.comboBox5);
-			this.splitContainer1.Panel2.Controls.Add(this.comboBox3);
 			this.splitContainer1.Panel2.SizeChanged += new System.EventHandler(this.splitContainer1_Panel2_SizeChanged);
 			this.splitContainer1.Size = new System.Drawing.Size(925, 635);
 			this.splitContainer1.SplitterDistance = 308;
@@ -471,7 +459,7 @@
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "Form1";
-			this.Text = "SEViewer";
+			this.Text = "SoundViewer";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
 			this.Load += new System.EventHandler(this.Form1_Load);
@@ -503,7 +491,6 @@
 		private System.Windows.Forms.TextBox textCopyStr;
 		private System.Windows.Forms.ComboBox copyStrSelect;
 		private System.Windows.Forms.GroupBox groupBox5;
-		private System.Windows.Forms.ComboBox comboBox3;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.CheckBox tabCategorySE;
 		private System.Windows.Forms.CheckBox tabCategoryBGM;

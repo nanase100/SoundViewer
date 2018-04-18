@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SEViewer.Properties {
+namespace SoundViewer.Properties {
     using System;
     
     
