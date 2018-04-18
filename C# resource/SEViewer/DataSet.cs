@@ -7,6 +7,7 @@ using System.Collections;
 using Newtonsoft.Json;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Drawing;
 
 namespace SEViewer
 {
@@ -71,6 +72,7 @@ namespace SEViewer
 
         public HashSet<string>[] m_genreList { get; set; }
         public HashSet<string>[] m_genreList2 { get; set; }
+		public List<Color>[]		m_genreColorList { get; set; }
 
         public Dictionary<string, DataSet>  GetDataSet(int type)
 		{
@@ -82,14 +84,18 @@ namespace SEViewer
         //-----------------------------------------------------------------------------------------------
         public DataSetManager()
         {
-            m_dataMaster    = new Dictionary<string, DataSet>[MAX_CATEGORY];
-            m_genreList     = new HashSet<string>[MAX_CATEGORY];
-            m_genreList2    = new HashSet<string>[MAX_CATEGORY];
+            m_dataMaster	    = new Dictionary<string, DataSet>[MAX_CATEGORY];
+            m_genreList		    = new HashSet<string>[MAX_CATEGORY];
+            m_genreList2		= new HashSet<string>[MAX_CATEGORY];
+			m_genreColorList    = new List<Color>[MAX_CATEGORY];
+			
+
             for (int i = 0; i < MAX_CATEGORY; i++)
 			{
-				m_dataMaster[i] = new Dictionary<string, DataSet>();
-                m_genreList[i]  = new HashSet<string>();
-                m_genreList2[i] = new HashSet<string>();
+				m_dataMaster[i]		= new Dictionary<string, DataSet>();
+                m_genreList[i]		= new HashSet<string>();
+                m_genreList2[i]		= new HashSet<string>();
+				m_genreColorList[i] = new List<Color>();
             }
 
             soundPath   = new string[MAX_CATEGORY];
@@ -213,7 +219,8 @@ namespace SEViewer
             Regex regGeter2 = new Regex("(.*),(.*),(.*)", RegexOptions.IgnoreCase);
             Regex regIgnore = new Regex(@"//|^\n", RegexOptions.IgnoreCase);
 
-            Regex regGenre = new Regex("※(.*)");
+			Regex regGenre = new Regex("※(.*)");
+            Regex regGenreEx = new Regex("※(.*),#(..)(..)(..)");
 
             string nowGenre = "未定ジャンル";
             string uniGenre = "";
@@ -245,35 +252,49 @@ namespace SEViewer
 
                     uniGenre = "";
 
-                    //まずジャンルを読み込むか判別
-                    matchStringSplit = regGenre.Match(stBuffer);
-                    if (matchStringSplit.Success == true)
-                    {
-                        nowGenre = matchStringSplit.Groups[1].Value;
-                        m_genreList[i].Add(nowGenre);
-                    }else{
-                        matchStringSplit = regGeter2.Match(stBuffer);
-                        if (matchStringSplit.Success == false)
-                        {
-                            matchStringSplit = regGeter.Match(stBuffer);
-                            if (matchStringSplit.Success == false)
-                                continue;
-                            else
-                                uniGenre = "";
-                        }else{
-                            uniGenre = matchStringSplit.Groups[3].ToString();
-                            m_genreList2[i].Add(nowGenre +"∴"+ uniGenre);
-                        }
-                               
-                        tmpData				= new DataSet();
-                        tmpData.m_fileName  = matchStringSplit.Groups[1].ToString();
-                        tmpData.m_summary   = matchStringSplit.Groups[2].ToString();
-                        tmpData.m_genre1    = nowGenre;
-                        tmpData.m_genre2    = uniGenre;
-                        tmpData.m_isExist   = false;
+                    //まずジャンル色付きを読み込むか判別
+					matchStringSplit = regGenreEx.Match(stBuffer);
+					if (matchStringSplit.Success == true )	{
+						
+						nowGenre = matchStringSplit.Groups[1].Value;
+						int R = System.Convert.ToInt32( matchStringSplit.Groups[2].Value, 16 );
+						int G = System.Convert.ToInt32( matchStringSplit.Groups[3].Value, 16 );
+						int B = System.Convert.ToInt32( matchStringSplit.Groups[4].Value, 16 );
+						Color genreColor = Color.FromArgb(R, G, B);
 
-                        m_dataMaster[i][tmpData.m_fileName] = tmpData;
-                    }
+						m_genreList[i].Add(nowGenre);
+						m_genreColorList[i].Add( genreColor );
+					}else{
+						matchStringSplit = regGenre.Match(stBuffer);
+						if (matchStringSplit.Success == true)
+						{
+							nowGenre = matchStringSplit.Groups[1].Value;
+							m_genreList[i].Add(nowGenre);
+							m_genreColorList[i].Add( Color.Black );
+						}else{
+							matchStringSplit = regGeter2.Match(stBuffer);
+							if (matchStringSplit.Success == false)
+							{
+								matchStringSplit = regGeter.Match(stBuffer);
+								if (matchStringSplit.Success == false)
+									continue;
+								else
+									uniGenre = "";
+							}else{
+								uniGenre = matchStringSplit.Groups[3].ToString();
+								m_genreList2[i].Add(nowGenre +"∴"+ uniGenre);
+							}
+                               
+							tmpData				= new DataSet();
+							tmpData.m_fileName  = matchStringSplit.Groups[1].ToString();
+							tmpData.m_summary   = matchStringSplit.Groups[2].ToString();
+							tmpData.m_genre1    = nowGenre;
+							tmpData.m_genre2    = uniGenre;
+							tmpData.m_isExist   = false;
+
+							m_dataMaster[i][tmpData.m_fileName] = tmpData;
+						}
+					}
                 }
                 streamData.Close();
             }
@@ -411,7 +432,11 @@ namespace SEViewer
 				if(genre2 != "")	m_dataMaster[type][fileName].m_genre2 = genre2;
 				m_dataMaster[type][fileName].m_isExist = true;
 			}
-			
+		}
+
+		public void DelDictionary( string key, int dicType )
+		{
+			m_dataMaster[dicType].Remove( key );
 		}
 	};
 }

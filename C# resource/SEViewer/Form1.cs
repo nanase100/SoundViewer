@@ -322,9 +322,21 @@ namespace SEViewer
 			treeView1.Nodes.Clear();
 
 			TreeNode topNode = treeView1.Nodes.Add( "全て表示");
+			TreeNode tmpNode;
+			int i = 0;
 
-			foreach (string genre in Program.m_data.m_genreList[soundCategory])
-                topNode.Nodes.Add(genre);
+			foreach (string genre in Program.m_data.m_genreList[soundCategory]){
+                tmpNode = topNode.Nodes.Add(genre);
+
+				if( Program.m_data.m_genreColorList[soundCategory][i] != Color.Black ){
+					tmpNode.ForeColor = Program.m_data.m_genreColorList[soundCategory][i];
+					//tmpNode.ForeColor = Color.Black;
+				}else{
+					tmpNode.BackColor = Color.White;
+					tmpNode.ForeColor = Color.Black;
+				}
+				i++;
+			}
 
 			topNode.Expand();
 			treeView1.SelectedNode = topNode;
@@ -582,16 +594,27 @@ namespace SEViewer
 				copyStringToClipboard(copyFileName);
 				
 			}
-            else if(e.KeyCode == Keys.F1 && m_soundModeType != 4 )
+
+            if(e.KeyCode == Keys.F3 && m_soundModeType != 4 )
             {
 				//リスト4にいま選択中の音を放り込む
 				if (listView1.SelectedItems.Count != 0)
 				{
 					Program.m_data.AddDictionary(listView1.SelectedItems[0].Text, 4, listView1.SelectedItems[0].SubItems[3].Text, listView1.SelectedItems[0].SubItems[1].Text, listView1.SelectedItems[0].SubItems[2].Text);
-				}
-				else
-				{
+				}else{
 					System.Windows.Forms.MessageBox.Show("音をお気に入りリストへ追加するには、いずれかの音を選んでからF1を押して下さい");
+				}
+			}
+
+			 if(e.KeyCode == Keys.F4 && m_soundModeType == 4 )
+            {
+				//リスト4にいま選択中の音を放り込む
+				if (listView1.SelectedItems.Count != 0)
+				{
+					Program.m_data.DelDictionary(listView1.SelectedItems[0].Text, 4);
+					SetListViewItem();
+				}else{
+					System.Windows.Forms.MessageBox.Show("削除するお気に入り音を選んでください");
 				}
 
 
