@@ -67,14 +67,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SEViewer.exe" size="119296">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SEViewer.exe" size="118784">
       <assemblyIdentity name="SEViewer" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>Z4pr6XW2vyGEUQznYIe3YibWzc8=</dsig:DigestValue>
+        <dsig:DigestValue>dQYBL/j/6hI+l/UzOiMo9pBk4ZU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

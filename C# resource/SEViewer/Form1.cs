@@ -55,17 +55,11 @@ namespace SEViewer
 			InitializeComponent();
 
 			//hotKey				=  new HotKey(MOD_KEY.ALT | MOD_KEY.CONTROL | MOD_KEY.SHIFT, Keys.F);
-			hotKey[0] = new HotKey(MOD_KEY.CONTROL, Keys.D1);
-			hotKey[1] = new HotKey(MOD_KEY.CONTROL, Keys.D2);
-			hotKey[2] = new HotKey(MOD_KEY.CONTROL, Keys.D3);
-			hotKey[3] = new HotKey(MOD_KEY.CONTROL, Keys.D4);
-			hotKey[4] = new HotKey(MOD_KEY.CONTROL, Keys.D5);
+			hotKey[0] = new HotKey( 0, Keys.F1);
+			hotKey[1] = new HotKey( 0, Keys.F2);
 
 			hotKey[0].HotKeyPush += new EventHandler(hotKey_HotKeyPush01);
 			hotKey[1].HotKeyPush += new EventHandler(hotKey_HotKeyPush02);
-			hotKey[2].HotKeyPush += new EventHandler(hotKey_HotKeyPush03);
-			hotKey[3].HotKeyPush += new EventHandler(hotKey_HotKeyPush04);
-			hotKey[4].HotKeyPush += new EventHandler(hotKey_HotKeyPush05);
 
 			m_soundPlayer = new soundPlayer();
 
@@ -485,10 +479,10 @@ namespace SEViewer
 			Program.m_data.m_toolOption[2] = (menuItemCheck3.Checked?1:0);
 			Program.m_data.m_toolOption[3] = (menuItemCheck4.Checked?1:0);
 
-            for (int i = 0; i < HOTKEY_COUNT; i++)
-			{
-				hotKey[i].Dispose();
-			}
+
+			hotKey[0].Dispose();
+			hotKey[1].Dispose();
+
 			timer1.Stop();
 			m_soundPlayer.StopSound();
 			m_soundPlayer.ReleaseWIO();
@@ -708,8 +702,14 @@ namespace SEViewer
 		void hotKey_HotKeyPush01(object sender, EventArgs e)
 		{
 			//MessageBox.Show("ホットキーが押されました。");
-			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
-			copyStringToClipboard(copyFileName,1);		  
+			switch( m_soundModeType )
+			{
+				case 0:	tabCategoryFAV.Checked = true;		break;
+				case 1:	tabCategorySE.Checked = true;		break;
+				case 2:	tabCategoryBGM.Checked = true;		break;
+				case 3:	tabCategoryBGV.Checked = true;		break;
+				case 4:	tabCategoryUSEFULL.Checked = true;	break;
+			}
 		}
 
 		//-----------------------------------------------------------------------------------------------
@@ -718,40 +718,16 @@ namespace SEViewer
 		void hotKey_HotKeyPush02(object sender, EventArgs e)
 		{
 			//MessageBox.Show("ホットキーが押されました。");
-			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
-			copyStringToClipboard(copyFileName,2);
+			switch( m_soundModeType )
+			{
+				case 0:	tabCategoryBGM.Checked = true;		break;
+				case 1:	tabCategoryBGV.Checked = true;		break;
+				case 2:	tabCategoryUSEFULL.Checked = true;		break;
+				case 3:	tabCategoryFAV.Checked = true;	break;
+				case 4:	tabCategorySE.Checked = true;		break;
+			}
 		}
 		
-		//-----------------------------------------------------------------------------------------------
-		//
-		//-----------------------------------------------------------------------------------------------
-		void hotKey_HotKeyPush03(object sender, EventArgs e)
-		{
-			//MessageBox.Show("ホットキーが押されました。");
-			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
-			copyStringToClipboard(copyFileName,3);
-		}
-		
-		//-----------------------------------------------------------------------------------------------
-		//
-		//-----------------------------------------------------------------------------------------------
-		void hotKey_HotKeyPush04(object sender, EventArgs e)
-		{
-			//MessageBox.Show("ホットキーが押されました。");
-			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
-			copyStringToClipboard(copyFileName,4);
-		}
-		
-		//-----------------------------------------------------------------------------------------------
-		//
-		//-----------------------------------------------------------------------------------------------
-		void hotKey_HotKeyPush05(object sender, EventArgs e)
-		{
-			//MessageBox.Show("ホットキーが押されました。");
-			string copyFileName = (listView1.SelectedItems.Count == 0 ? "" : System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text));
-			copyStringToClipboard(copyFileName,5);
-			
-		}
 		
 		//-----------------------------------------------------------------------------------------------
 		//
