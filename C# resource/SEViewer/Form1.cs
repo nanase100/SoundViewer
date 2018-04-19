@@ -278,7 +278,7 @@ namespace SoundViewer
 
 				System.Windows.Forms.ListViewItem tmpItem = listView1.Items.Add(filePath);
 			
-				if (Program.m_data.GetDataSet(m_soundModeType)[filePath].m_isExist == false)
+				if (Program.m_data.GetDataSet(m_soundModeType)[filePath].m_isExist == false && m_soundModeType != 4 )
 				{
 					tmpItem.ForeColor = Color.Red;
 				}else{
