@@ -32,9 +32,7 @@ namespace SEViewer
 		private bool m_receiveEventFlg = false;
 
 		private ListViewItemComparer listViewItemSorter;
-
-		private const int HOTKEY_COUNT	= 5;
-		private HotKey[] hotKey				= new HotKey[HOTKEY_COUNT];
+		
 
 		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
 		public static extern IntPtr FindWindow(String sClassName, String sWindowText);
@@ -53,16 +51,8 @@ namespace SEViewer
 		public Form1()
 		{
 			InitializeComponent();
-
-			//hotKey				=  new HotKey(MOD_KEY.ALT | MOD_KEY.CONTROL | MOD_KEY.SHIFT, Keys.F);
-			hotKey[0] = new HotKey( 0, Keys.F1);
-			hotKey[1] = new HotKey( 0, Keys.F2);
-
-			hotKey[0].HotKeyPush += new EventHandler(hotKey_HotKeyPush01);
-			hotKey[1].HotKeyPush += new EventHandler(hotKey_HotKeyPush02);
-
+			
 			m_soundPlayer = new soundPlayer();
-
 
             System.Math.Max(10, System.Math.Min(5, 8));
 
@@ -110,7 +100,7 @@ namespace SEViewer
 			//----------------------------------------------------------------
 
             UpdateGenreComboBox(0);
-            UpdateGenreComboBox2(1);
+            UpdateGenreComboBox2(0);
 
             comboBox4.SelectedIndex = 0;
 			NewCreateFileList();
@@ -480,9 +470,6 @@ namespace SEViewer
 			Program.m_data.m_toolOption[3] = (menuItemCheck4.Checked?1:0);
 
 
-			hotKey[0].Dispose();
-			hotKey[1].Dispose();
-
 			timer1.Stop();
 			m_soundPlayer.StopSound();
 			m_soundPlayer.ReleaseWIO();
@@ -695,38 +682,7 @@ namespace SEViewer
 
 			SendKey();
 		}
-
-		//-----------------------------------------------------------------------------------------------
-		//
-		//-----------------------------------------------------------------------------------------------
-		void hotKey_HotKeyPush01(object sender, EventArgs e)
-		{
-			//MessageBox.Show("ホットキーが押されました。");
-			switch( m_soundModeType )
-			{
-				case 0:	tabCategoryFAV.Checked = true;		break;
-				case 1:	tabCategorySE.Checked = true;		break;
-				case 2:	tabCategoryBGM.Checked = true;		break;
-				case 3:	tabCategoryBGV.Checked = true;		break;
-				case 4:	tabCategoryUSEFULL.Checked = true;	break;
-			}
-		}
-
-		//-----------------------------------------------------------------------------------------------
-		//
-		//-----------------------------------------------------------------------------------------------
-		void hotKey_HotKeyPush02(object sender, EventArgs e)
-		{
-			//MessageBox.Show("ホットキーが押されました。");
-			switch( m_soundModeType )
-			{
-				case 0:	tabCategoryBGM.Checked = true;		break;
-				case 1:	tabCategoryBGV.Checked = true;		break;
-				case 2:	tabCategoryUSEFULL.Checked = true;		break;
-				case 3:	tabCategoryFAV.Checked = true;	break;
-				case 4:	tabCategorySE.Checked = true;		break;
-			}
-		}
+		
 		
 		
 		//-----------------------------------------------------------------------------------------------
@@ -739,7 +695,6 @@ namespace SEViewer
 			{
 				ChangeSoundTab( 0 );
 			}
-			
 		}
 
 		private void checkBox3_CheckedChanged(object sender, EventArgs e)
