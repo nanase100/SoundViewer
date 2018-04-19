@@ -297,6 +297,7 @@ namespace SoundViewer
 					}
                 }
                 streamData.Close();
+
             }
             
             //-----------------------------------------------------

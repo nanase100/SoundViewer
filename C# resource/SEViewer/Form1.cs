@@ -30,13 +30,16 @@ namespace SoundViewer
 		private List<string>		m_fileList		= new List<string>();
 
 		private List<string>		m_selectGenreList = new List<string>();
+		private List<string>		m_favGenreList = new List<string>();
+
+		private List<bool>[]		m_treeCheckState = new List<bool>[5];
 
 		private bool m_receiveEventFlg = false;
 
 		private ListViewItemComparer listViewItemSorter;
 
 		private const int HOTKEY_COUNT	= 5;
-		private HotKey[] hotKey				= new HotKey[HOTKEY_COUNT];
+		
 
 		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
 		public static extern IntPtr FindWindow(String sClassName, String sWindowText);
@@ -56,17 +59,17 @@ namespace SoundViewer
 		{
 			InitializeComponent();
 
-			//hotKey				=  new HotKey(MOD_KEY.ALT | MOD_KEY.CONTROL | MOD_KEY.SHIFT, Keys.F);
-			hotKey[0] = new HotKey( 0, Keys.F1);
-			hotKey[1] = new HotKey( 0, Keys.F2);
-
-			hotKey[0].HotKeyPush += new EventHandler(hotKey_HotKeyPush01);
-			hotKey[1].HotKeyPush += new EventHandler(hotKey_HotKeyPush02);
-
 			m_soundPlayer = new soundPlayer();
 
 
             System.Math.Max(10, System.Math.Min(5, 8));
+
+			m_treeCheckState[0] = new List<bool>();
+			m_treeCheckState[1] = new List<bool>();
+			m_treeCheckState[2] = new List<bool>();
+			m_treeCheckState[3] = new List<bool>();
+			m_treeCheckState[4] = new List<bool>();
+
 
 			//----------------------------------------------------------------
 			m_exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -137,6 +140,8 @@ namespace SoundViewer
 
 			//ListViewItemSorterを指定する
 			listView1.ListViewItemSorter = listViewItemSorter;
+			ChangeSoundTab(0);
+			GetFavGenre();
 		}
 
 
@@ -152,8 +157,9 @@ namespace SoundViewer
             string drawinStr;
             string genre2Str;
 
-			for( int i = 0; i < Program.m_data.m_genreList2.Count(); i++ )
-				foreach (string genre in Program.m_data.m_genreList2[i])
+			if( m_soundModeType != 4 )
+			{
+				foreach (string genre in Program.m_data.m_genreList2[m_soundModeType])
 				{
 					drawinStr = genre.Split('∴')[0].ToString();
 					genre2Str = genre.Split('∴')[1].ToString();
@@ -162,9 +168,14 @@ namespace SoundViewer
 						if(comboBox5.Items.IndexOf(genre2Str) == -1 )
 							comboBox5.Items.Add(genre2Str);
 					}
-					
 				}
-
+			}else{
+				foreach( var tmpStr in m_favGenreList )
+				{
+					if( tmpStr != null )comboBox5.Items.Add( tmpStr );
+				}
+			}
+	
             comboBox5.SelectedIndex = 0;
         }
         //-----------------------------------------------------------------------------------------------
@@ -306,11 +317,18 @@ namespace SoundViewer
 
 			TreeNode topNode = treeView1.Nodes.Add( "全て表示");
 			TreeNode tmpNode;
-			int i = 0;
+			int		i = 0;
+
+			if(  m_treeCheckState[soundCategory].Count() != Program.m_data.m_genreList[soundCategory].Count )
+			{
+				m_treeCheckState[soundCategory].Clear();
+				int loopCount = Program.m_data.m_genreList[soundCategory].Count;
+				for( int j = 0; j < loopCount; j++ ) m_treeCheckState[soundCategory].Add(true);
+			}
 
 			foreach (string genre in Program.m_data.m_genreList[soundCategory]){
                 tmpNode = topNode.Nodes.Add(genre);
-				tmpNode.Checked = true;
+				tmpNode.Checked = m_treeCheckState[soundCategory][i];
 				if( Program.m_data.m_genreColorList[soundCategory][i] != Color.Black ){
 					tmpNode.ForeColor = Program.m_data.m_genreColorList[soundCategory][i];
 					//tmpNode.ForeColor = Color.Black;
@@ -320,14 +338,16 @@ namespace SoundViewer
 				}
 				i++;
 			}
-			GetSelectGenre();
-
+			
 			m_receiveEventFlg = false;
 
 			topNode.Expand();
 			treeView1.SelectedNode = topNode;
 			
 			treeView1.EndUpdate();
+
+			GetSelectGenre();
+
 		}
 
 		//-----------------------------------------------------------------------------------------------
@@ -473,9 +493,6 @@ namespace SoundViewer
 			Program.m_data.m_toolOption[3] = (menuItemCheck4.Checked?1:0);
 
 
-			hotKey[0].Dispose();
-			hotKey[1].Dispose();
-
 			timer1.Stop();
 			m_soundPlayer.StopSound();
 			m_soundPlayer.ReleaseWIO();
@@ -588,6 +605,7 @@ namespace SoundViewer
 				if (listView1.SelectedItems.Count != 0)
 				{
 					Program.m_data.AddDictionary(listView1.SelectedItems[0].Text, 4, listView1.SelectedItems[0].SubItems[3].Text, listView1.SelectedItems[0].SubItems[1].Text, listView1.SelectedItems[0].SubItems[2].Text);
+					GetFavGenre();
 				}else{
 					System.Windows.Forms.MessageBox.Show("音をお気に入りリストへ追加するには、いずれかの音を選んでからF1を押して下さい");
 				}
@@ -599,6 +617,7 @@ namespace SoundViewer
 				if (listView1.SelectedItems.Count != 0)
 				{
 					Program.m_data.DelDictionary(listView1.SelectedItems[0].Text, 4);
+					GetFavGenre();
 					SetListViewItem();
 				}else{
 					System.Windows.Forms.MessageBox.Show("削除するお気に入り音を選んでください");
@@ -678,38 +697,6 @@ namespace SoundViewer
 
 			SendKey();
 		}
-
-		//-----------------------------------------------------------------------------------------------
-		//
-		//-----------------------------------------------------------------------------------------------
-		void hotKey_HotKeyPush01(object sender, EventArgs e)
-		{
-			//MessageBox.Show("ホットキーが押されました。");
-			switch( m_soundModeType )
-			{
-				case 0:	tabCategoryFAV.Checked = true;		break;
-				case 1:	tabCategorySE.Checked = true;		break;
-				case 2:	tabCategoryBGM.Checked = true;		break;
-				case 3:	tabCategoryBGV.Checked = true;		break;
-				case 4:	tabCategoryUSEFULL.Checked = true;	break;
-			}
-		}
-
-		//-----------------------------------------------------------------------------------------------
-		//
-		//-----------------------------------------------------------------------------------------------
-		void hotKey_HotKeyPush02(object sender, EventArgs e)
-		{
-			//MessageBox.Show("ホットキーが押されました。");
-			switch( m_soundModeType )
-			{
-				case 0:	tabCategoryBGM.Checked = true;		break;
-				case 1:	tabCategoryBGV.Checked = true;		break;
-				case 2:	tabCategoryUSEFULL.Checked = true;		break;
-				case 3:	tabCategoryFAV.Checked = true;	break;
-				case 4:	tabCategorySE.Checked = true;		break;
-			}
-		}
 		
 		
 		//-----------------------------------------------------------------------------------------------
@@ -755,8 +742,7 @@ namespace SoundViewer
 			m_receiveEventFlg	= true;
 			m_soundModeType		= soundCategory;
 			
-            UpdateGenreComboBox2();
-
+           
 			tabCategorySE.CheckState		= ( soundCategory == 0 ? CheckState.Checked : CheckState.Unchecked );
             tabCategoryBGM.CheckState		= ( soundCategory == 1 ? CheckState.Checked : CheckState.Unchecked );
 			tabCategoryBGV.CheckState		= ( soundCategory == 2 ? CheckState.Checked : CheckState.Unchecked );
@@ -767,13 +753,16 @@ namespace SoundViewer
 			UpdateList(m_searchStr);
 			m_receiveEventFlg = false;
 			SetListViewItem();
-				
+			
+
 			if( menuItemCheck3.Checked == true )
 			{
 				copyStrSelect.SelectedIndex = soundCategory + 1;
 			}
 
 			SetTreeViewItem(soundCategory);
+		
+			UpdateGenreComboBox2();
 		}
 
 
@@ -906,6 +895,11 @@ namespace SoundViewer
 			}
 			treeView1.EndUpdate();
 
+			for( int i = 0; i < treeView1.Nodes[0].Nodes.Count; i++)
+			{
+				m_treeCheckState[m_soundModeType][i] = treeView1.Nodes[0].Nodes[i].Checked;
+			}
+
 			GetSelectGenre();
 
 			UpdateGenreComboBox2();
@@ -916,14 +910,29 @@ namespace SoundViewer
 		{
 			m_selectGenreList.Clear();
 
-			
-
 			//チェックのついている項目をリストに追加していく
 			foreach( TreeNode tmpNode in treeView1.Nodes[0].Nodes )
 			{ 
 				if( tmpNode.Checked == true ) m_selectGenreList.Add( tmpNode.Text );
 			}
 
+		}
+
+		private void GetFavGenre()
+		{
+			m_favGenreList.Clear();
+			
+
+			foreach (KeyValuePair<string, DataSet> tmpDat in Program.m_data.GetDataSet(4))
+			{
+				string genre = tmpDat.Value.m_genre2;
+			//	drawinStr = genre.Split('∴')[0].ToString();
+			//	genre2Str = genre.Split('∴')[1].ToString();
+			
+				if( genre != "" && m_favGenreList.IndexOf(genre) == -1 )
+					m_favGenreList.Add(genre);
+				
+			}
 		}
 
 
@@ -971,7 +980,15 @@ namespace SoundViewer
 			}
 		}
 
-		
+		private void treeView1_MouseDown(object sender, MouseEventArgs e)
+		{
+			if( treeView1.HitTest( e.X,e.Y).Node == null ) return;
+
+			treeView1.HitTest( e.X,e.Y).Node.Checked = !(treeView1.HitTest( e.X,e.Y).Node.Checked);
+			treeView1.SelectedNode = treeView1.HitTest( e.X,e.Y).Node;
+		}
+
+
 
 		/*
 private void sendKey()
