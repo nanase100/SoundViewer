@@ -29,6 +29,8 @@ namespace SEViewer
 		private List<string>		m_showFileList  = new List<string>();
 		private List<string>		m_fileList		= new List<string>();
 
+		private List<string>		m_favGenreList = new List<string>();
+
 		private bool m_receiveEventFlg = false;
 
 		private ListViewItemComparer listViewItemSorter;
@@ -126,6 +128,7 @@ namespace SEViewer
 			listView1.ListViewItemSorter = listViewItemSorter;
 
 			SetTreeViewItem(0);
+			GetFavGenre();
 		}
 
 
@@ -154,17 +157,25 @@ namespace SEViewer
 
             if(checkStr == "ジャンル指定なし") isDrawin =false;
 
-            foreach (string genre in Program.m_data.m_genreList2[id])
-            {
-                drawinStr = genre.Split('∴')[0].ToString();
-                genre2Str = genre.Split('∴')[1].ToString();
-
-                if( !isDrawin || drawinStr == checkStr)
-                {
-                    if(comboBox5.Items.IndexOf(genre2Str) == -1 )
-                        comboBox5.Items.Add(genre2Str);
-                }
-            }
+            if( m_soundModeType != 4 )
+			{
+				foreach (string genre in Program.m_data.m_genreList2[id])
+				{
+					drawinStr = genre.Split('∴')[0].ToString();
+					genre2Str = genre.Split('∴')[1].ToString();
+			
+					if( !isDrawin || drawinStr == checkStr)
+					{
+						if(comboBox5.Items.IndexOf(genre2Str) == -1 )
+							comboBox5.Items.Add(genre2Str);
+					}
+				}
+			}else{
+				foreach( var tmpStr in m_favGenreList )
+				{
+					if( tmpStr != null )comboBox5.Items.Add( tmpStr );
+				}
+			}
 
             
             comboBox5.SelectedIndex = 0;
@@ -582,6 +593,7 @@ namespace SEViewer
 				if (listView1.SelectedItems.Count != 0)
 				{
 					Program.m_data.AddDictionary(listView1.SelectedItems[0].Text, 4, listView1.SelectedItems[0].SubItems[3].Text, listView1.SelectedItems[0].SubItems[1].Text, listView1.SelectedItems[0].SubItems[2].Text);
+					GetFavGenre();
 				}else{
 					System.Windows.Forms.MessageBox.Show("音をお気に入りリストへ追加するには、いずれかの音を選んでからF1を押して下さい");
 				}
@@ -593,6 +605,7 @@ namespace SEViewer
 				if (listView1.SelectedItems.Count != 0)
 				{
 					Program.m_data.DelDictionary(listView1.SelectedItems[0].Text, 4);
+					GetFavGenre();
 					SetListViewItem();
 				}else{
 					System.Windows.Forms.MessageBox.Show("削除するお気に入り音を選んでください");
@@ -867,6 +880,23 @@ namespace SEViewer
 			//UpdateList( m_searchStr );
             //SetListViewItem();
 
+		}
+
+		private void GetFavGenre()
+		{
+			m_favGenreList.Clear();
+			
+
+			foreach (KeyValuePair<string, DataSet> tmpDat in Program.m_data.GetDataSet(4))
+			{
+				string genre = tmpDat.Value.m_genre2;
+			//	drawinStr = genre.Split('∴')[0].ToString();
+			//	genre2Str = genre.Split('∴')[1].ToString();
+			
+				if( genre != "" && m_favGenreList.IndexOf(genre) == -1 )
+					m_favGenreList.Add(genre);
+				
+			}
 		}
 
 		private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
