@@ -31,6 +31,9 @@ namespace SEViewer
 
 		private List<string>		m_favGenreList = new List<string>();
 
+		private List<int>			m_selectGenreState1	= new List<int>();
+		private List<int>			m_selectGenreState2	= new List<int>();
+
 		private bool m_receiveEventFlg = false;
 
 		private ListViewItemComparer listViewItemSorter;
@@ -58,6 +61,10 @@ namespace SEViewer
 
             System.Math.Max(10, System.Math.Min(5, 8));
 
+			for( int i = 0; i < DataSetManager.MAX_CATEGORY; i++ ){
+				m_selectGenreState1.Add(0);
+				m_selectGenreState2.Add(0);
+			}
 			//----------------------------------------------------------------
 			m_exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			m_exePath = MainFunction.Add_EndPathSeparator(m_exePath);
@@ -479,6 +486,7 @@ namespace SEViewer
 			Program.m_data.m_toolOption[1] = (menuItemCheck2.Checked?1:0);
 			Program.m_data.m_toolOption[2] = (menuItemCheck3.Checked?1:0);
 			Program.m_data.m_toolOption[3] = (menuItemCheck4.Checked?1:0);
+			Program.m_data.m_toolOption[4] = (menuItemCheck5.Checked?1:0);
 
 
 			timer1.Stop();
@@ -527,6 +535,7 @@ namespace SEViewer
 			menuItemCheck2.Checked =	(Program.m_data.m_toolOption[1] == 1 ? true : false );
 			menuItemCheck3.Checked =	(Program.m_data.m_toolOption[2] == 1 ? true : false );
 			menuItemCheck4.Checked =	(Program.m_data.m_toolOption[3] == 1 ? true : false );
+			menuItemCheck5.Checked =	(Program.m_data.m_toolOption[4] == 1 ? true : false );
         }
 
 		//-----------------------------------------------------------------------------------------------
@@ -737,6 +746,10 @@ namespace SEViewer
 
 		private void ChangeSoundTab( int soundCategory )
 		{
+
+			m_selectGenreState1[m_soundModeType] = comboBox3.SelectedIndex;
+			m_selectGenreState2[m_soundModeType] = comboBox5.SelectedIndex;
+
 			m_receiveEventFlg	= true;
 			m_soundModeType		= soundCategory;
 
@@ -759,7 +772,15 @@ namespace SEViewer
 				copyStrSelect.SelectedIndex = soundCategory + 1;
 			}
 
+			
 			SetTreeViewItem(soundCategory);
+			
+			if( menuItemCheck5.Checked  )
+			{
+				comboBox3.SelectedIndex = m_selectGenreState1[soundCategory];
+				comboBox5.SelectedIndex = m_selectGenreState2[soundCategory];
+			}
+
 		}
 
 
@@ -871,6 +892,12 @@ namespace SEViewer
 		{
 			menuItemCheck4.Checked = !menuItemCheck4.Checked;
 		}
+		
+		private void menuItemCheck5_Click(object sender, EventArgs e)
+		{
+			menuItemCheck5.Checked = !menuItemCheck5.Checked;
+		}
+
 
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
@@ -943,6 +970,10 @@ namespace SEViewer
 				menuItemCombo1.Items.Add(menuItemCombo1.Text);
 			}
 		}
+
+
+
+
 
 		/*
 private void sendKey()

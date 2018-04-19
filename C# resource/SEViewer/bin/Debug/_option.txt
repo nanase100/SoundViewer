@@ -18,7 +18,7 @@
     "se.txt",
     "battle.txt",
     "bgm.txt",
-    "よく使う.txt",
+    "battle.txt",
     "fav.txt"
   ],
   
@@ -31,11 +31,23 @@
   ],
 
 "コピー文": [
-    "	se 0 %s",
-    "	se 0 %s",
-    "	%BGMPlay %s",
-    "	se 0 %s",
-    ""
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "1",
+    "2",
+    "3",
+    "4"
+  ],
+ 
+  "機能オプションONOFF": [
+    false,
+    false,
+    false,
+    false,
+    false
   ],
   
 }

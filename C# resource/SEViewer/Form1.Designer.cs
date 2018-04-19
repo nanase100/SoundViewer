@@ -60,6 +60,7 @@
 			this.menuItemCheck2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItemCheck3 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItemCheck4 = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItemCheck5 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItemCombo1 = new System.Windows.Forms.ToolStripComboBox();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -374,7 +375,8 @@
             this.menuItemCheck1,
             this.menuItemCheck2,
             this.menuItemCheck3,
-            this.menuItemCheck4});
+            this.menuItemCheck4,
+            this.menuItemCheck5});
 			this.オプション設定ToolStripMenuItem.Name = "オプション設定ToolStripMenuItem";
 			this.オプション設定ToolStripMenuItem.Size = new System.Drawing.Size(104, 26);
 			this.オプション設定ToolStripMenuItem.Text = "オプション設定";
@@ -408,6 +410,13 @@
 			this.menuItemCheck4.Size = new System.Drawing.Size(316, 22);
 			this.menuItemCheck4.Text = "音をリストで選択した時に自動的に再生する";
 			this.menuItemCheck4.Click += new System.EventHandler(this.menuItemCheck4_Click);
+			// 
+			// menuItemCheck5
+			// 
+			this.menuItemCheck5.Name = "menuItemCheck5";
+			this.menuItemCheck5.Size = new System.Drawing.Size(316, 22);
+			this.menuItemCheck5.Text = "タブ毎に記憶する";
+			this.menuItemCheck5.Click += new System.EventHandler(this.menuItemCheck5_Click);
 			// 
 			// menuItemCombo1
 			// 
@@ -526,6 +535,7 @@
 		private System.Windows.Forms.TreeView treeView1;
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.ToolStripMenuItem menuItemCheck5;
 	}
 }
 
