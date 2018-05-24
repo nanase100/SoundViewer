@@ -33,6 +33,8 @@ namespace SEViewer
 
 		private List<int>			m_selectGenreState1	= new List<int>();
 		private List<int>			m_selectGenreState2	= new List<int>();
+		
+		private				ToolTip ToolTip1;
 
 		private bool m_receiveEventFlg = false;
 
@@ -57,6 +59,22 @@ namespace SEViewer
 		{
 			InitializeComponent();
 			
+			 //ToolTipを作成する
+			ToolTip1 = new ToolTip(this.components);
+			//フォームにcomponentsがない場合
+			//ToolTip1 = new ToolTip();
+			
+			//ToolTipが表示されるまでの時間
+			ToolTip1.InitialDelay = 500;
+
+			//ToolTipが表示されている時に、別のToolTipを表示するまでの時間
+			ToolTip1.ReshowDelay = 1000;
+
+			//ToolTipを表示する時間
+			ToolTip1.AutoPopDelay = 2000;
+			//フォームがアクティブでない時でもToolTipを表示する
+			ToolTip1.ShowAlways = true;
+
 			m_soundPlayer = new soundPlayer();
 
             System.Math.Max(10, System.Math.Min(5, 8));
@@ -133,7 +151,7 @@ namespace SEViewer
 
 			//ListViewItemSorterを指定する
 			listView1.ListViewItemSorter = listViewItemSorter;
-
+			ChangeSoundTab(0);
 			SetTreeViewItem(0);
 			GetFavGenre();
 		}
@@ -781,6 +799,9 @@ namespace SEViewer
 				comboBox5.SelectedIndex = m_selectGenreState2[soundCategory];
 			}
 
+
+			//Button1とButton2にToolTipが表示されるようにする
+			ToolTip1.SetToolTip(button3, Program.m_data.commonCopyStr[m_soundModeType] );
 		}
 
 
@@ -971,7 +992,15 @@ namespace SEViewer
 			}
 		}
 
+		private void button3_Click_1(object sender, EventArgs e)
+		{
+			CopyCommonCopyStr( m_soundModeType );
+		}
 
+		private void CopyCommonCopyStr( int id )
+		{
+			System.Windows.Forms.Clipboard.SetText( Program.m_data.commonCopyStr[id] );
+		}
 
 
 

@@ -44,6 +44,7 @@
 			this.textCopyStr = new System.Windows.Forms.TextBox();
 			this.copyStrSelect = new System.Windows.Forms.ComboBox();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.button3 = new System.Windows.Forms.Button();
 			this.checkBox9 = new System.Windows.Forms.CheckBox();
 			this.button2 = new System.Windows.Forms.Button();
 			this.tabCategorySE = new System.Windows.Forms.CheckBox();
@@ -139,9 +140,9 @@
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.button1.Location = new System.Drawing.Point(10, 18);
+			this.button1.Location = new System.Drawing.Point(3, 18);
 			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(84, 43);
+			this.button1.Size = new System.Drawing.Size(84, 30);
 			this.button1.TabIndex = 8;
 			this.button1.Text = "再生▷";
 			this.button1.UseVisualStyleBackColor = true;
@@ -192,7 +193,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.textCopyStr.Location = new System.Drawing.Point(6, 50);
 			this.textCopyStr.Name = "textCopyStr";
-			this.textCopyStr.Size = new System.Drawing.Size(274, 19);
+			this.textCopyStr.Size = new System.Drawing.Size(284, 19);
 			this.textCopyStr.TabIndex = 0;
 			this.textCopyStr.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
 			// 
@@ -215,7 +216,7 @@
             "9番目の形式でコピーする"});
 			this.copyStrSelect.Location = new System.Drawing.Point(6, 24);
 			this.copyStrSelect.Name = "copyStrSelect";
-			this.copyStrSelect.Size = new System.Drawing.Size(274, 20);
+			this.copyStrSelect.Size = new System.Drawing.Size(284, 20);
 			this.copyStrSelect.TabIndex = 7;
 			this.copyStrSelect.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
 			// 
@@ -223,20 +224,33 @@
 			// 
 			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox5.Controls.Add(this.button3);
 			this.groupBox5.Controls.Add(this.copyStrSelect);
 			this.groupBox5.Controls.Add(this.textCopyStr);
 			this.groupBox5.Location = new System.Drawing.Point(3, 392);
 			this.groupBox5.Name = "groupBox5";
-			this.groupBox5.Size = new System.Drawing.Size(296, 84);
+			this.groupBox5.Size = new System.Drawing.Size(296, 112);
 			this.groupBox5.TabIndex = 13;
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "コピー文の選択・編集";
+			// 
+			// button3
+			// 
+			this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.button3.Location = new System.Drawing.Point(7, 75);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(283, 31);
+			this.button3.TabIndex = 8;
+			this.button3.Text = "汎用コピー文 をコピーする";
+			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.button3_Click_1);
 			// 
 			// checkBox9
 			// 
 			this.checkBox9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox9.AutoSize = true;
-			this.checkBox9.Location = new System.Drawing.Point(194, 75);
+			this.checkBox9.Location = new System.Drawing.Point(187, 54);
 			this.checkBox9.Name = "checkBox9";
 			this.checkBox9.Size = new System.Drawing.Size(96, 16);
 			this.checkBox9.TabIndex = 23;
@@ -246,9 +260,9 @@
 			// button2
 			// 
 			this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.button2.Location = new System.Drawing.Point(100, 18);
+			this.button2.Location = new System.Drawing.Point(93, 18);
 			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(190, 43);
+			this.button2.Size = new System.Drawing.Size(190, 30);
 			this.button2.TabIndex = 10;
 			this.button2.Text = "停止■";
 			this.button2.UseVisualStyleBackColor = true;
@@ -317,9 +331,9 @@
 			this.groupBox1.Controls.Add(this.checkBox9);
 			this.groupBox1.Controls.Add(this.button1);
 			this.groupBox1.Controls.Add(this.button2);
-			this.groupBox1.Location = new System.Drawing.Point(3, 482);
+			this.groupBox1.Location = new System.Drawing.Point(0, 510);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(296, 150);
+			this.groupBox1.Size = new System.Drawing.Size(296, 122);
 			this.groupBox1.TabIndex = 23;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "音の再生・停止・音量";
@@ -327,17 +341,17 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(11, 109);
+			this.label1.Location = new System.Drawing.Point(6, 58);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(197, 12);
+			this.label1.Size = new System.Drawing.Size(173, 12);
 			this.label1.TabIndex = 27;
-			this.label1.Text = "音量ボリューム  (wavには適用されません";
+			this.label1.Text = "ボリューム  (wavには適用されません";
 			// 
 			// trackBar1
 			// 
 			this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.trackBar1.Location = new System.Drawing.Point(7, 121);
+			this.trackBar1.Location = new System.Drawing.Point(13, 73);
 			this.trackBar1.Maximum = 255;
 			this.trackBar1.Name = "trackBar1";
 			this.trackBar1.Size = new System.Drawing.Size(270, 45);
@@ -479,6 +493,7 @@
 			this.Controls.Add(this.menuStrip1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
+			this.MinimumSize = new System.Drawing.Size(480, 360);
 			this.Name = "Form1";
 			this.Text = "SEViewer";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -536,6 +551,7 @@
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ToolStripMenuItem menuItemCheck5;
+		private System.Windows.Forms.Button button3;
 	}
 }
 

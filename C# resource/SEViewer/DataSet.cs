@@ -30,12 +30,13 @@ namespace SEViewer
 		public List<string>	音リストテキストのパス			{ get; set; } = new List<string>();
 		public List<string>	コピー文						{ get; set; } = new List<string>();
 		public List<bool>	機能オプションONOFF				{ get; set; } = new List<bool>();
+		public List<string>	汎用コピー文					{ get; set; } = new List<string>();
 	
 	};
 
     //-----------------------------------------------------------------------------------------------
     //
-    //se.txtのSEの情報などをまとめて持っておくクラス   
+    //se.txtのSEの情報などをまとめて持っておくマネージャークラス   。時代遅れか(´・ω・｀)
     //
     //-----------------------------------------------------------------------------------------------
     class DataSetManager
@@ -48,6 +49,8 @@ namespace SEViewer
 		public string[] txtPath { get; set; }
 
         public List<string> copyStr { get; set; }
+
+		public List<string> commonCopyStr { get; set; }
 
         public int m_left		{ set; get; }
         public int m_top		{ set; get; }
@@ -88,6 +91,8 @@ namespace SEViewer
             m_genreList		    = new HashSet<string>[MAX_CATEGORY];
             m_genreList2		= new HashSet<string>[MAX_CATEGORY];
 			m_genreColorList    = new List<Color>[MAX_CATEGORY];
+
+			commonCopyStr		= new List<string>();
 			
 
             for (int i = 0; i < MAX_CATEGORY; i++)
@@ -170,6 +175,9 @@ namespace SEViewer
 			copyStr = new List<string>();
 			for( int i = 0; i < jsonData.コピー文.Count; i++ )
 				copyStr.Add( jsonData.コピー文[i] );
+
+			for( int i = 0; i < jsonData.汎用コピー文.Count; i++ )
+				commonCopyStr.Add( jsonData.汎用コピー文[i] );
 
             //window座標とか
             m_left = 0;
@@ -319,6 +327,9 @@ namespace SEViewer
 			
 			for( int i = 0; i < copyStr.Count; i++ )
 				jsonData.コピー文[i] = copyStr[i];
+
+			for( int i = 0; i < commonCopyStr.Count; i++ )
+				jsonData.汎用コピー文[i] = commonCopyStr[i];
             
 			jsonData.画面分割幅 = m_splitSize;
 
