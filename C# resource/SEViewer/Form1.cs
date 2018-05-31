@@ -71,7 +71,7 @@ namespace SEViewer
 			ToolTip1.ReshowDelay = 1000;
 
 			//ToolTipを表示する時間
-			ToolTip1.AutoPopDelay = 2000;
+			ToolTip1.AutoPopDelay = 5000;
 			//フォームがアクティブでない時でもToolTipを表示する
 			ToolTip1.ShowAlways = true;
 
@@ -392,10 +392,7 @@ namespace SEViewer
 		{
 			string copyFileName = System.IO.Path.GetFileNameWithoutExtension(listView1.SelectedItems[0].Text);
 
-			this.Text = copyFileName;
-		//	this.textBoxFileName.Text = listView1.SelectedItems[0].Text;
-		//	this.textBoxSammary.Text = listView1.SelectedItems[0].SubItems[2].Text;
-
+			
 			//右クリックならばクリップボードにコピー
 			if (e.Button == System.Windows.Forms.MouseButtons.Right)
 			{
@@ -406,6 +403,8 @@ namespace SEViewer
                 }else{
                     copyStringToClipboard(copyFileName);
                 }
+
+				this.Text = copyFileName;
 			}
 		}
 
@@ -720,6 +719,8 @@ namespace SEViewer
 
 			if (copyFileName != "") System.Windows.Forms.Clipboard.SetText(copyFileName);
 
+
+
 			SendKey();
 		}
 		
@@ -999,6 +1000,7 @@ namespace SEViewer
 
 		private void CopyCommonCopyStr( int id )
 		{
+			this.Text = Program.m_data.commonCopyStr[id];
 			System.Windows.Forms.Clipboard.SetText( Program.m_data.commonCopyStr[id] );
 		}
 
