@@ -8,8 +8,8 @@
     <ProjectGuid>{51252079-01D1-4C52-BA8F-6FDC616BB904}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SEViewer</RootNamespace>
-    <AssemblyName>SEViewer</AssemblyName>
+    <RootNamespace>SoundViewer</RootNamespace>
+    <AssemblyName>SoundViewer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -102,6 +102,10 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="hnx8Encord\CharCode.cs" />
+    <Compile Include="hnx8Encord\FileReader.cs" />
+    <Compile Include="hnx8Encord\FileType.cs" />
+    <Compile Include="hnx8Encord\ReadJEnc.cs" />
     <Compile Include="hookKEy.cs" />
     <Compile Include="MainFunction.cs" />
     <Compile Include="Program.cs" />

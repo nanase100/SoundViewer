@@ -162,6 +162,18 @@ namespace SEViewer
 			try{
             //ここから設定の読み込み
 
+				FileInfo fileInf = new FileInfo(settingFilePath);
+				Hnx8.ReadJEnc.FileReader reader = new Hnx8.ReadJEnc.FileReader(fileInf);
+				Hnx8.ReadJEnc.CharCode c = reader.Read(fileInf);
+				
+				if( c.Name == "ShiftJIS" )
+				{
+					System.Windows.Forms.MessageBox.Show( "option.txtが shift-jis で保存されています。\noption.txtは utf-8 で保存してください。" );
+				}
+			
+			// 判別読み出し実行。判別結果はReadメソッドの戻り値で把握できます
+			
+
 			jsonData = JsonConvert.DeserializeObject<readJsonType1>(File.ReadAllText(settingFilePath));
 			
 			
@@ -449,5 +461,7 @@ namespace SEViewer
 		{
 			m_dataMaster[dicType].Remove( key );
 		}
+
+
 	};
 }
