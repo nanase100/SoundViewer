@@ -708,12 +708,14 @@ namespace SEViewer
 			
 			copyFileName = copyFileName.Replace("%n", System.Environment.NewLine);
 
-			copyFileName = copyFileName.Replace("%i", listView1.SelectedItems[0].SubItems[3].Text);
+			
 
 			if (listView1.SelectedItems.Count != 0)
 			{
 				copyFileName = copyFileName.Replace("%g", listView1.SelectedItems[0].SubItems[1].Text);
-			}
+                copyFileName = copyFileName.Replace("%h", listView1.SelectedItems[0].SubItems[2].Text);
+                copyFileName = copyFileName.Replace("%i", listView1.SelectedItems[0].SubItems[3].Text);
+            }
 
 			copyFileName = copyFileName.Replace("%t", "	");
 
@@ -1001,7 +1003,10 @@ namespace SEViewer
 		private void CopyCommonCopyStr( int id )
 		{
 			this.Text = Program.m_data.commonCopyStr[id];
-			System.Windows.Forms.Clipboard.SetText( Program.m_data.commonCopyStr[id] );
+            string copyText = Program.m_data.commonCopyStr[id];
+            copyText = copyText.Replace("%n", System.Environment.NewLine);
+            copyText = copyText.Replace("%t", "	");
+			System.Windows.Forms.Clipboard.SetText(copyText);
 		}
 
 

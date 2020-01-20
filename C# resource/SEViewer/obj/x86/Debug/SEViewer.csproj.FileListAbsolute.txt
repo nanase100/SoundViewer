@@ -5,7 +5,6 @@ C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\OggVorbis.xml
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\Newtonsoft.Json.dll
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\Newtonsoft.Json.xml
-C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SEViewer.csprojResolveAssemblyReference.cache
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\SoundViewer.exe.config
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\SoundViewer.exe.manifest
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\SoundViewer.application
@@ -17,3 +16,5 @@ C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SoundViewer.application
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SoundViewer.exe
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SoundViewer.pdb
+C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SEViewer.csprojAssemblyReference.cache
+C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SEViewer.csproj.CopyComplete
