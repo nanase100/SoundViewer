@@ -1,5 +1,6 @@
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SEViewer.Form1.resources
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SEViewer.csproj.GenerateResource.Cache
+C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\obj\x86\Debug\SEViewer.csproj.CoreCompileInputs.cache
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\OggVorbis.dll
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\OggVorbis.xml
 C:\Users\NEXTON002\Documents\GitHub\SoundViewer\SoundViewer\C# resource\SEViewer\bin\Debug\Newtonsoft.Json.dll
