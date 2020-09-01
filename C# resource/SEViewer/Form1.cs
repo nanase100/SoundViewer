@@ -33,10 +33,7 @@ namespace SEViewer
 
 		private List<int>			m_selectGenreState1	= new List<int>();
 		private List<int>			m_selectGenreState2	= new List<int>();
-		private List<int>			m_selectGenreStateEx = new List<int>();
-
-		private string				m_nowSelectGenreEx = "";			//追加の親ジャンル名
-
+		
 		private				ToolTip ToolTip1;
 
 		private bool m_receiveEventFlg = false;
@@ -85,7 +82,6 @@ namespace SEViewer
 			for( int i = 0; i < DataSetManager.MAX_CATEGORY; i++ ){
 				m_selectGenreState1.Add(0);
 				m_selectGenreState2.Add(0);
-				m_selectGenreStateEx.Add(0);
 			}
 			//----------------------------------------------------------------
 			m_exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -167,23 +163,8 @@ namespace SEViewer
             comboBox3.Items.Clear();
             comboBox3.Items.Add("ジャンル指定なし");
 
-			if( Program.m_data.m_genreListEx[m_soundModeType].Count() == 0 || m_nowSelectGenreEx == "全て表示" )
-			{ 
-				foreach (string genre in Program.m_data.m_genreList[id])
+            foreach (string genre in Program.m_data.m_genreList[id])
                 comboBox3.Items.Add(genre);
-			}
-			else {
-				
-				foreach( var tmp in Program.m_data.GetDataSet(m_soundModeType) )
-				{
-					if( tmp.Value.m_genreEx == m_nowSelectGenreEx )
-					{
-						int idx = comboBox3.Items.IndexOf(tmp.Value.m_genre1);
-						  if (idx == -1)			comboBox3.Items.Add(tmp.Value.m_genre1);
-					}
-				}
-				
-			}
 
             comboBox3.SelectedIndex = 0;
         }
@@ -236,7 +217,7 @@ namespace SEViewer
 
 			foreach (string tmpFilePath in m_fileList)
 			{
-                genreCheck = CheckGenreCrossFit(tmpFilePath );
+                genreCheck = CheckGenreCrossFit(Program.m_data.GetGenre(tmpFilePath, m_soundModeType), Program.m_data.GetGenre2(tmpFilePath, m_soundModeType),comboBox3.SelectedItem.ToString(), comboBox5.SelectedItem.ToString());
 
                 if ( (regPattern == "" || 
 					( comboBox4.SelectedIndex == 0 && regGeter.IsMatch(Program.m_data.GetSummary(tmpFilePath, m_soundModeType))  )||
@@ -252,19 +233,10 @@ namespace SEViewer
 		}
 
 
-        bool CheckGenreCrossFit( string tmpFilePath )
+        bool CheckGenreCrossFit( string check1, string check2, string selectGenre1, string selectGenre2)
         {
-			string check1 = Program.m_data.GetGenre(tmpFilePath, m_soundModeType);
-			string check2 = Program.m_data.GetGenre2(tmpFilePath, m_soundModeType);
-			string checkEx = Program.m_data.GetGenreEx(tmpFilePath, m_soundModeType);
-			string selectGenre1 = comboBox3.SelectedItem.ToString();
-			string selectGenre2 = comboBox5.SelectedItem.ToString();
-
-
-			if( Program.m_data.m_genreListEx[m_soundModeType].Count() > 1 && checkEx != m_nowSelectGenreEx && m_nowSelectGenreEx != "全て表示" ) return false;
-
-			//ジャンル1の絞込
-				if (selectGenre1 == "ジャンル指定なし" && selectGenre2 == "ジャンル指定なし") return true;
+            //ジャンル1の絞込
+            if (selectGenre1 == "ジャンル指定なし" && selectGenre2 == "ジャンル指定なし") return true;
 
             if(selectGenre1 == "ジャンル指定なし" && (check2 == selectGenre1 || check2 == selectGenre2)) return true;
             if(selectGenre2 == "ジャンル指定なし" && (check1 == selectGenre1 || check1 == selectGenre2)) return true;
@@ -373,44 +345,17 @@ namespace SEViewer
 			TreeNode tmpNode;
 			int i = 0;
 
-			if( Program.m_data.m_genreListEx[soundCategory].Count() == 0 )
-			{ 
-				//旧バージョン
-				foreach (string genre in Program.m_data.m_genreList[soundCategory]){
-					tmpNode = topNode.Nodes.Add(genre);
+			foreach (string genre in Program.m_data.m_genreList[soundCategory]){
+                tmpNode = topNode.Nodes.Add(genre);
 
-					if( Program.m_data.m_genreColorList[soundCategory][i] != Color.Black ){
-						tmpNode.ForeColor = Program.m_data.m_genreColorList[soundCategory][i];
-					}else{
-						tmpNode.BackColor = Color.White;
-						tmpNode.ForeColor = Color.Black;
-					}
-					
+				if( Program.m_data.m_genreColorList[soundCategory][i] != Color.Black ){
+					tmpNode.ForeColor = Program.m_data.m_genreColorList[soundCategory][i];
+					//tmpNode.ForeColor = Color.Black;
+				}else{
+					tmpNode.BackColor = Color.White;
+					tmpNode.ForeColor = Color.Black;
 				}
-			}
-			else
-			{
-				string tmpGenre1 = "";
-				//ニューバージョン
-				foreach (string genre in Program.m_data.m_genreListEx[soundCategory])
-				{
-					tmpNode = topNode.Nodes.Add(genre);
-
-					tmpGenre1 = "";
-
-					foreach (KeyValuePair<string, DataSet> tmpDat in Program.m_data.GetDataSet(m_soundModeType))
-					{
-						if(genre == tmpDat.Value.m_genreEx && tmpGenre1 != tmpDat.Value.m_genre1 )
-						{
-							tmpGenre1 = tmpDat.Value.m_genre1;
-							tmpNode.Nodes.Add( tmpGenre1 );
-
-						}
-					}
-
-				}
-
-					
+				i++;
 			}
 
 			topNode.Expand();
@@ -724,7 +669,8 @@ namespace SEViewer
 		private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			UpdateList(m_searchStr);
-
+            UpdateGenreComboBox2(m_soundModeType,true);
+            SetListViewItem();
 		}
 
 
@@ -824,14 +770,6 @@ namespace SEViewer
 
 			m_selectGenreState1[m_soundModeType] = comboBox3.SelectedIndex;
 			m_selectGenreState2[m_soundModeType] = comboBox5.SelectedIndex;
-			m_selectGenreStateEx[m_soundModeType] = -1;
-			if(treeView1.SelectedNode != null ){
-
-				if( treeView1.SelectedNode.Level == 1 ) m_selectGenreStateEx[m_soundModeType] = treeView1.SelectedNode.Index;
-				if (treeView1.SelectedNode.Level == 2) m_selectGenreStateEx[m_soundModeType] = treeView1.SelectedNode.Parent.Index;
-			}
-
-			
 
 			m_receiveEventFlg	= true;
 			m_soundModeType		= soundCategory;
@@ -860,24 +798,10 @@ namespace SEViewer
 			
 			if( menuItemCheck5.Checked  )
 			{
-				
-
-				
-				UpdateGenreComboBox2(m_soundModeType, true);
-
-				SetListViewItem();
-				if (m_selectGenreStateEx[m_soundModeType] != -1)
-				{ 
-					treeView1.SelectedNode = treeView1.Nodes[0].Nodes[m_selectGenreStateEx[m_soundModeType]];
-					treeView1.SelectedNode.Expand();
-				}
 				comboBox3.SelectedIndex = m_selectGenreState1[soundCategory];
 				comboBox5.SelectedIndex = m_selectGenreState2[soundCategory];
-				
 			}
 
-			UpdateGenreComboBox2(m_soundModeType, true);
-			SetListViewItem();
 
 			//Button1とButton2にToolTipが表示されるようにする
 			ToolTip1.SetToolTip(button3, Program.m_data.commonCopyStr[m_soundModeType] );
@@ -1001,36 +925,11 @@ namespace SEViewer
 
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			if( e.Node.Text == "全て表示" ) 
-			{
-				m_nowSelectGenreEx = e.Node.Text;
-				comboBox3.SelectedIndex = 0;
-				UpdateGenreComboBox2(m_soundModeType, true);
-				SetListViewItem();
-			}
-			else
-			{
-				if( e.Node.Level == 2 || Program.m_data.m_genreListEx[m_soundModeType].Count() == 0 )
-				{
-					if (e.Node.Level == 2) m_nowSelectGenreEx = e.Node.Parent.Text;
-					UpdateGenreComboBox(m_soundModeType);
-					comboBox3.SelectedIndex = e.Node.Index + 1;
-					UpdateGenreComboBox2(m_soundModeType, true);
-					SetListViewItem();
-
-				}
-				else
-				{
-					if( e.Node.Level == 1 || Program.m_data.m_genreListEx[m_soundModeType].Count() > 0 ) m_nowSelectGenreEx = e.Node.Text;
-					UpdateGenreComboBox(m_soundModeType);
-					comboBox3.SelectedIndex = e.Node.Index + 1;
-					UpdateList( m_searchStr );
-					SetListViewItem();
-				}
-			}
+			if( e.Node.Text == "全て表示" ) comboBox3.SelectedIndex = 0;
+			else							comboBox3.SelectedIndex = e.Node.Index+1;
 			
 			//UpdateList( m_searchStr );
-			//SetListViewItem();
+            //SetListViewItem();
 
 		}
 
