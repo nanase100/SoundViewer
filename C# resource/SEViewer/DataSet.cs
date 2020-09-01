@@ -14,6 +14,7 @@ namespace SEViewer
         public bool m_isExist { get; set; }
         public string m_genre1 { get; set; }
         public string m_genre2 { get; set; }
+        public string m_genreEx { get; set; }
 
     };
 
@@ -72,6 +73,7 @@ namespace SEViewer
 
         public HashSet<string>[] m_genreList { get; set; }
         public HashSet<string>[] m_genreList2 { get; set; }
+        public HashSet<string>[] m_genreListEx { get; set; }
         public List<Color>[] m_genreColorList { get; set; }
 
         public Dictionary<string, DataSet> GetDataSet(int type)
@@ -87,6 +89,7 @@ namespace SEViewer
             m_dataMaster = new Dictionary<string, DataSet>[MAX_CATEGORY];
             m_genreList = new HashSet<string>[MAX_CATEGORY];
             m_genreList2 = new HashSet<string>[MAX_CATEGORY];
+            m_genreListEx = new HashSet<string>[MAX_CATEGORY];
             m_genreColorList = new List<Color>[MAX_CATEGORY];
 
             commonCopyStr = new List<string>();
@@ -97,6 +100,7 @@ namespace SEViewer
                 m_dataMaster[i] = new Dictionary<string, DataSet>();
                 m_genreList[i] = new HashSet<string>();
                 m_genreList2[i] = new HashSet<string>();
+                m_genreListEx[i] = new HashSet<string>();
                 m_genreColorList[i] = new List<Color>();
             }
 
@@ -148,6 +152,16 @@ namespace SEViewer
             if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
 
             return m_dataMaster[type][keyFileName].m_genre2;
+        }
+
+        //-----------------------------------------------------------------------------------------------
+        //ディクショナリアクセサ
+        //-----------------------------------------------------------------------------------------------
+        public string GetGenreEx(string keyFileName, int type)
+        {
+            if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
+
+            return m_dataMaster[type][keyFileName].m_genreEx;
         }
 
         //-----------------------------------------------------------------------------------------------
@@ -238,9 +252,11 @@ namespace SEViewer
             Regex regIgnore = new Regex(@"//|^\n", RegexOptions.IgnoreCase);
 
             Regex regGenre = new Regex("※(.*)");
-            Regex regGenreEx = new Regex("※(.*),#(..)(..)(..)");
+            Regex regGenreEx = new Regex("※※(.*)");
+            Regex regGenreColor = new Regex("※(.*),#(..)(..)(..)");
 
             string nowGenre = "未定ジャンル";
+            string nowExGenre = "未定ジャンルEx";
             string uniGenre = "";
 
             Match matcIgnoreResult = null;
@@ -271,54 +287,64 @@ namespace SEViewer
 
                     uniGenre = "";
 
-                    //まずジャンル色付きを読み込むか判別
+                    //まずexジャンルかどうか、読み込むか判別
+
                     matchStringSplit = regGenreEx.Match(stBuffer);
                     if (matchStringSplit.Success == true)
                     {
-
-                        nowGenre = matchStringSplit.Groups[1].Value;
-                        int R = System.Convert.ToInt32(matchStringSplit.Groups[2].Value, 16);
-                        int G = System.Convert.ToInt32(matchStringSplit.Groups[3].Value, 16);
-                        int B = System.Convert.ToInt32(matchStringSplit.Groups[4].Value, 16);
-                        Color genreColor = Color.FromArgb(R, G, B);
-
-                        m_genreList[i].Add(nowGenre);
-                        m_genreColorList[i].Add(genreColor);
+                        nowExGenre = matchStringSplit.Groups[1].Value;
+                        m_genreListEx[i].Add(nowExGenre);
                     }
-                    else
-                    {
-                        matchStringSplit = regGenre.Match(stBuffer);
+                    else {
+                        matchStringSplit = regGenreColor.Match(stBuffer);
                         if (matchStringSplit.Success == true)
                         {
+
                             nowGenre = matchStringSplit.Groups[1].Value;
+                            int R = System.Convert.ToInt32(matchStringSplit.Groups[2].Value, 16);
+                            int G = System.Convert.ToInt32(matchStringSplit.Groups[3].Value, 16);
+                            int B = System.Convert.ToInt32(matchStringSplit.Groups[4].Value, 16);
+                            Color genreColor = Color.FromArgb(R, G, B);
+
                             m_genreList[i].Add(nowGenre);
-                            m_genreColorList[i].Add(Color.Black);
+                            m_genreColorList[i].Add(genreColor);
                         }
                         else
                         {
-                            matchStringSplit = regGeter2.Match(stBuffer);
-                            if (matchStringSplit.Success == false)
+                            matchStringSplit = regGenre.Match(stBuffer);
+                            if (matchStringSplit.Success == true)
                             {
-                                matchStringSplit = regGeter.Match(stBuffer);
-                                if (matchStringSplit.Success == false)
-                                    continue;
-                                else
-                                    uniGenre = "";
+                                nowGenre = matchStringSplit.Groups[1].Value;
+                                m_genreList[i].Add(nowGenre);
+                                m_genreColorList[i].Add(Color.Black);
                             }
                             else
                             {
-                                uniGenre = matchStringSplit.Groups[3].ToString();
-                                m_genreList2[i].Add(nowGenre + "∴" + uniGenre);
+                                matchStringSplit = regGeter2.Match(stBuffer);
+                                if (matchStringSplit.Success == false)
+                                {
+                                    matchStringSplit = regGeter.Match(stBuffer);
+                                    if (matchStringSplit.Success == false)
+                                        continue;
+                                    else
+                                        uniGenre = "";
+                                }
+                                else
+                                {
+                                    uniGenre = matchStringSplit.Groups[3].ToString();
+                                    m_genreList2[i].Add(nowGenre + "∴" + uniGenre);
+                                }
+
+                                tmpData = new DataSet();
+                                tmpData.m_fileName = matchStringSplit.Groups[1].ToString();
+                                tmpData.m_summary = matchStringSplit.Groups[2].ToString();
+                                tmpData.m_genre1 = nowGenre;
+                                tmpData.m_genre2 = uniGenre;
+                                tmpData.m_genreEx = nowExGenre;
+                                tmpData.m_isExist = false;
+
+                                m_dataMaster[i][tmpData.m_fileName] = tmpData;
                             }
-
-                            tmpData = new DataSet();
-                            tmpData.m_fileName = matchStringSplit.Groups[1].ToString();
-                            tmpData.m_summary = matchStringSplit.Groups[2].ToString();
-                            tmpData.m_genre1 = nowGenre;
-                            tmpData.m_genre2 = uniGenre;
-                            tmpData.m_isExist = false;
-
-                            m_dataMaster[i][tmpData.m_fileName] = tmpData;
                         }
                     }
                 }
