@@ -18,12 +18,29 @@ namespace SEViewer
         [STAThread]
         static void Main()
         {
-
-       
             string exePath = System.IO.Directory.GetCurrentDirectory();// System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             exePath = MainFunction.Add_EndPathSeparator(exePath);
 
-            if (Program.m_data.settingLoad(exePath + "option.txt") == false)
+
+			GetEncodeClass getEncoder = new GetEncodeClass();
+		
+			if( System.IO.File.Exists(exePath + "option.txt") && getEncoder.GetEncoding(exePath + "option.txt") != System.Text.Encoding.UTF8 )
+			{
+				System.Windows.Forms.MessageBox.Show("設定ファイル(option.txt)の文字コードが UTF-8 以外で保存されています。option.txtの文字コードを変更してください。", "");
+				return;
+			}
+
+			if (getEncoder.GetEncoding(exePath + "_option.txt") != System.Text.Encoding.UTF8)
+			{
+				System.Windows.Forms.MessageBox.Show("設定ファイル(_option.txt)の文字コードが UTF-8 以外で保存されています。option.txtの文字コードを変更してください。", "");
+				return;
+			}
+
+
+
+
+
+			if (Program.m_data.settingLoad(exePath + "option.txt") == false)
             {
                 if (Program.m_data.settingLoad(exePath + "_option.txt") == false)
                 {

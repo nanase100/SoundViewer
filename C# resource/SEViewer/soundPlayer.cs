@@ -8,9 +8,7 @@ using System.Media;
 
 using System.ComponentModel;
 
-using Tsukikage.WinMM.WaveIO;
-using Tsukikage.Audio;
-
+using Un4seen.Bass;
 
 namespace SEViewer
 {
@@ -21,204 +19,129 @@ namespace SEViewer
     //-----------------------------------------------------------------------------------------------
     class soundPlayer
     {
-        bool isWave         = true;
-        bool isLifeStream   = false;
+		private double m_length = 0;
+		private int playHandle = 0;
 
-        [DllImport("winmm.dll")]
-		public static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
-
-
-        /// OggStream
-        OggDecodeStream waveStream = null;
-
-        /// waveOut
-        WaveOut waveOut            = null;
-
-        private System.Media.SoundPlayer player = null;
-
-        public void ReleaseWIO()
-        {
-            if (player != null)
-            {
-                player.Stop();
-                player.Dispose();
-                player = null;
-            }
+		static private Form1 m_parent = null;
 
 
-            if (waveOut != null)
-            {
-                waveOut.Close();
-            }
-            
-
-            if (waveStream != null)
-            {
-                waveStream.Close();
-                waveStream.Dispose();
-            }
-
-            
-        }
-
-        //-----------------------------------------------------------------------------------------------
-        //ファイルを再生する
-        //-----------------------------------------------------------------------------------------------
-        public bool PlaySound(string fileName, int vol = 255, bool isLoop = false )
-        {
-			//再生されているときは止める
-			if (player != null)
-				StopSound();
-
-			if (isLifeStream == true)
-			{
-				waveOut.Stop();
-                waveOut.Close();
-				waveStream.Seek(0, SeekOrigin.Begin);
-				waveStream.Close();
-				waveStream.Dispose();
-				isLifeStream = false;
-				
-				//伊藤：連続で再生しているとオーディオデバイスを開きそこねるエラーが一部で起きている対策。【無理やり】
-				System.Threading.Thread.Sleep(32);
-
-			}//再生されているときは止める
-			if (player != null) StopSound();
-                
-
-
-            if (Path.GetExtension(fileName) == ".wav")
-            {
-                //読み込む
-                player = new System.Media.SoundPlayer(fileName);
-                
-                //非同期再生する
-                if( isLoop == false )   player.Play();
-				else					player.PlayLooping();
-
-                isWave = true;
-                return false;
-
-
-				//次のようにすると、ループ再生される
-				//player.PlayLooping();
-
-				//次のようにすると、最後まで再生し終えるまで待機する
-				//player.PlaySync();
-            }
-            else
-            {
-				
-				//伊藤：連続で再生しているとオーディオデバイスを開きそこねるエラーが一部で起きている対策。【無理やり】
-				System.Threading.Thread.Sleep(16);
-
-                // 自動ループ機能を使ってOggVorbisデコーダを初期化する。引数の単位は頭からのサンプル数。
-                // Oggファイルをそのまま聴くとフェードアウトになってるんですが、ゲーム中は切れ目なくループ再生したいわけで。
-                // ループの先頭と末尾の位置は、Wave編集ソフトとかで開いて波形を見て決める。
-                // ループしたい場所のなるべく近くで、左右チャンネルとも音量がほぼ0になっているタイミングを見つけて指定。
-                // ループ位置を繋いだときに波形がジャンプしているとクリックノイズがのってしまう。
-                // 100サンプル程度前後しても、その程度の音飛び・リズム狂いに気づける人はほとんどいないはずなので、
-                // つなぎ目の音量優先で位置を決めましょう。
-                waveStream = new OggDecodeStream(File.OpenRead(fileName));
-
-                // WaveOut を初期化する。
-                waveOut = new WaveOut(WaveOut.WaveMapper, waveStream.SamplesPerSecond, waveStream.BitsPerSample, waveStream.Channels);
-                SetOggVolume( vol );
-                isWave       = false;
-                isLifeStream = true;
-                return true;
-            }
-        }
-
-        //-----------------------------------------------------------------------------------------------
-        //再生されている音を止める
-        //-----------------------------------------------------------------------------------------------
-        public void StopSound()
-        {
-            if (isWave)
-            {
-                if( player != null )
-                    player.Stop();
-            }else{
-
-				try
-				{
-					waveOut.Stop();
-					waveStream.Seek(0, SeekOrigin.Begin);
-					waveStream.Close();
-					isLifeStream = false;
-
-					waveOut.Close();
-					waveOut = null;
-				}
-				//waveOut.Stop();で、ファイルを開いていな状態で閉じようとすると、例外を投げてくるので華麗にスルー。
-				catch(Exception ex)
-				{
-
-				}
-            }
-        }
-
-		public bool SetOggVolume( int volume )
+		public soundPlayer(Form1 parent)
 		{
-			if( waveOut == null ) return false;
+			m_parent = parent;
 
-			uint totalVol = (uint)((volume<<8)+(volume<<24));
-			waveOutSetVolume( waveOut.Handle, totalVol );
+			if (!Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
+			{
+				return;
+			}
+
+		}
+
+		public void Dispose()
+		{
+			Bass.BASS_Stop();
+			Bass.BASS_PluginFree(0);
+			Bass.BASS_Free();
+		}
+
+		//-----------------------------------------------------------------------------------------------
+		//ファイルを再生する
+		//-----------------------------------------------------------------------------------------------
+		public bool PlaySound(string fileName, int vol = 255, bool isLoop = false, double second = 0)
+		{
+			StopSound();
+			playHandle = GetHandle(fileName);
+
+			//if ((Bass.BASS_ChannelFlags(playHandle, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_DEFAULT) & BASSFlag.BASS_SAMPLE_LOOP) == BASSFlag.BASS_SAMPLE_LOOP)
+			if(isLoop==false)
+			{
+				// loop flag was set, so remove it
+				Bass.BASS_ChannelFlags(playHandle, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_SAMPLE_LOOP);
+			}
+			else
+			{
+				// loop flag was not set, so set it
+				Bass.BASS_ChannelFlags(playHandle, BASSFlag.BASS_SAMPLE_LOOP, BASSFlag.BASS_SAMPLE_LOOP);
+			}
+			
+			Bass.BASS_ChannelPlay(playHandle, false);
+
+//			int syncHandle = Bass.BASS_ChannelSetSync(playHandle, BASSSync.BASS_SYNC_END, 0, proc, IntPtr.Zero);
+	//		if (syncHandle == 0) throw new InvalidOperationException("cannot set sync");
+
+			Bass.BASS_ChannelSetPosition(playHandle, second);
+			SetVolume(vol);
+			//ret = Bass.BASS_ChannelGetLength(playHandle);
+			m_length = Bass.BASS_ChannelBytes2Seconds(playHandle, Bass.BASS_ChannelGetLength(playHandle));
 
 			return true;
 		}
-        //-----------------------------------------------------------------------------------------------
-        //データをストリーミングして読み込む
-        //-----------------------------------------------------------------------------------------------
-        public bool Streaming( bool isLoop = false )
-        {
-            if (isLifeStream == false) return false;
 
-            // 再生位置を監視するにはタイマーやスレッドを使う。
-            // 44100Hz 2ch 16bps => 176400Bytes/s なので、
-            // 60fps ゲーム の場合、11025Bytes/fである。
-            // それよりは大きくしないと、音が途切れる。
+		protected int GetHandle(string filepath)
+		{
+			int handle = Bass.BASS_StreamCreateFile(filepath, 0, 0, BASSFlag.BASS_DEFAULT);
+			if (handle == 0) throw new ArgumentException("cannot create a stream.");
+			return handle;
+		}
 
-			int retByte = -1;
-            //const int BLOCK_SIZE = 16384;
-            const int BLOCK_SIZE = 32000;
-            const int BUFFER_SIZE = BLOCK_SIZE * 4;
-            while (waveOut.EnqueuedBufferSize < BUFFER_SIZE)
-            {
-                byte[] buffer = new byte[BLOCK_SIZE];
-                retByte = waveStream.Read(buffer, 0, BLOCK_SIZE);
 
-				//if( retByte < BLOCK_SIZE ) 
-				if( retByte == 0 ) 
-				{
-					if( isLoop == false )
-					{
-						return false;
-					}else{
-						waveStream.Seek(0, SeekOrigin.Begin);
-					}
-				}
-				
-                waveOut.Write(buffer);
-				return true;
-            }
+		//-----------------------------------------------------------------------------------------------
+		//再生されている音を止める
+		//-----------------------------------------------------------------------------------------------
+		public void StopSound()
+		{
+			Bass.BASS_ChannelStop(playHandle);
+			playHandle = 0;
+		}
 
-			return true;
-        }
+		public void SetVolume( int volume )
+		{
+			float fVolume = volume/(float)255;
+			Bass.BASS_ChannelSetAttribute(playHandle, BASSAttribute.BASS_ATTRIB_VOL, fVolume);
 
+		}
+
+
+		public int GetNowPlayPercent()
+		{
+			double ret = 0;
+
+			if (playHandle == 0)
+			{
+				ret = -1;
+			}
+			else
+			{
+				var now = this.GetNowPosition();
+				ret = (now * 100 / m_length);
+			}
+			return (int)ret;
+		}
+
+		public double GetNowPosition()
+		{
+			var pos = Bass.BASS_ChannelGetPosition(playHandle);
+			var now = Bass.BASS_ChannelBytes2Seconds(playHandle, pos);
+			return now;
+		}
 		//-----------------------------------------------------------------------------------------------
 		//音の長さ取得
 		//-----------------------------------------------------------------------------------------------
-		public int GetSELength(string path)
+		public double GetLength()
 		{
-
-			int ret = 0;
-
-
-
-			return ret;
-
+			return m_length;
 		}
-    }
+		public double GetLengthTmp(string fileName = "")
+		{
+			double ret = 0;
+			if (fileName != "")
+			{
+				var checkHandle = GetHandle(fileName);
+				ret = Bass.BASS_ChannelBytes2Seconds(checkHandle, Bass.BASS_ChannelGetLength(checkHandle));
+				Bass.BASS_StreamFree(checkHandle);
+			}
+			return ret;
+		}
+
+		
+	}
 }

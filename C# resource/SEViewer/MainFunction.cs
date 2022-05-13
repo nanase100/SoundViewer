@@ -19,6 +19,12 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
         public static string[] Get_PathFromDirectroy(string fromPath, string searchPattern, bool isFileNameOnly = false )
         {
+			if( System.IO.Directory.Exists( fromPath ) == false )
+			{
+				System.Windows.Forms.MessageBox.Show("音の読み込み元フォルダ： "+fromPath+"　は存在しないため読み込まれませんでした。");
+				string[] nullList = {"" };
+				return nullList;
+			}
 
             string[] fielList = Directory.GetFiles(fromPath, searchPattern, System.IO.SearchOption.AllDirectories);
 

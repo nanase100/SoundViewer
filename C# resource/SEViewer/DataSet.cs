@@ -18,19 +18,19 @@ namespace SEViewer
         public bool m_isExist       { get; set; }
         public string m_genre1      { get; set; }
         public string m_genre2      { get; set; }
-
-    };
+		public string playLength	{ get; set; } = "-1";
+	};
 
 
 	public class readJsonType1  {
 		public List<int>	ウインドウ座標					{ get; set; } = new List<int>();
 		public List<int>	音リストのカラム幅				{ get; set; } = new List<int>();
-		public int			画面分割幅						{ get; set; }
+		public int			画面分割幅					{ get; set; }
 		public List<string>	音ファイルのパス				{ get; set; } = new List<string>();
 		public List<string>	音リストテキストのパス			{ get; set; } = new List<string>();
 		public List<string>	コピー文						{ get; set; } = new List<string>();
-		public List<bool>	機能オプションONOFF				{ get; set; } = new List<bool>();
-	
+		public List<bool>	機能オプションONOFF			{ get; set; } = new List<bool>();
+		public string		汎用コピー文					{ get; set; }
 	};
 
     //-----------------------------------------------------------------------------------------------
@@ -61,6 +61,8 @@ namespace SEViewer
 		public int m_splitSize             { set; get; }
 
 		public List<int>		m_toolOption		{ set; get; } = new List<int>();
+
+		public string generalCopyStr { set;get; }
 
 		readJsonType1 jsonData;
 
@@ -148,10 +150,33 @@ namespace SEViewer
             return m_dataMaster[type][keyFileName].m_genre2;
         }
 
-        //-----------------------------------------------------------------------------------------------
-        //Load　se.txtの内容とフォルダ内の*.wav,*.oggを列挙する
-        //-----------------------------------------------------------------------------------------------
-        public bool settingLoad(string settingFilePath )
+
+		//-----------------------------------------------------------------------------------------------
+		//ディクショナリアクセサ
+		//-----------------------------------------------------------------------------------------------
+		public bool SetPlayLength(string keyFileName, string playLength, int type)
+		{
+			if (m_dataMaster[type].ContainsKey(keyFileName) == false) return false;
+
+			m_dataMaster[type][keyFileName].playLength = playLength;
+
+			return true;
+		}
+
+		//-----------------------------------------------------------------------------------------------
+		//ディクショナリアクセサ
+		//-----------------------------------------------------------------------------------------------
+		public string GetPlayLength(string keyFileName, int type)
+		{
+			if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
+
+			return m_dataMaster[type][keyFileName].playLength;
+		}
+
+		//-----------------------------------------------------------------------------------------------
+		//
+		//-----------------------------------------------------------------------------------------------
+		public bool settingLoad(string settingFilePath )
         {
 
 			try{
@@ -205,6 +230,8 @@ namespace SEViewer
             if (m_top < 0)		m_top = 0;
             if (m_height < 100) m_height = 100;
             if (m_width < 100)	m_width = 100;
+
+			generalCopyStr = jsonData.汎用コピー文;
 
 			}
 			catch( System.Exception ex)
@@ -319,7 +346,9 @@ namespace SEViewer
 			
 			for( int i = 0; i < copyStr.Count; i++ )
 				jsonData.コピー文[i] = copyStr[i];
-            
+
+			jsonData.汎用コピー文 = generalCopyStr;
+
 			jsonData.画面分割幅 = m_splitSize;
 
             //window座標とか

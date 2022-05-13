@@ -37,6 +37,7 @@
 			this.seCaption = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.listView1 = new System.Windows.Forms.ListView();
 			this.seGenre2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.button1 = new System.Windows.Forms.Button();
 			this.comboBox5 = new System.Windows.Forms.ComboBox();
 			this.comboBox3 = new System.Windows.Forms.ComboBox();
@@ -44,6 +45,7 @@
 			this.textCopyStr = new System.Windows.Forms.TextBox();
 			this.copyStrSelect = new System.Windows.Forms.ComboBox();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.button3 = new System.Windows.Forms.Button();
 			this.checkBox9 = new System.Windows.Forms.CheckBox();
 			this.button2 = new System.Windows.Forms.Button();
 			this.tabCategorySE = new System.Windows.Forms.CheckBox();
@@ -51,6 +53,10 @@
 			this.tabCategoryBGV = new System.Windows.Forms.CheckBox();
 			this.tabCategoryUSEFULL = new System.Windows.Forms.CheckBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.tbTotalTime = new System.Windows.Forms.TextBox();
+			this.tbPlayTime = new System.Windows.Forms.TextBox();
+			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.label1 = new System.Windows.Forms.Label();
 			this.trackBar1 = new System.Windows.Forms.TrackBar();
 			this.tabCategoryFAV = new System.Windows.Forms.CheckBox();
@@ -83,8 +89,8 @@
 			this.toolTip1.AutoPopDelay = 5000;
 			this.toolTip1.InitialDelay = 1000;
 			this.toolTip1.IsBalloon = true;
-			this.toolTip1.ReshowDelay = 100;
-			this.toolTip1.ToolTipTitle = "便利機能";
+			this.toolTip1.ReshowDelay = 1000;
+			this.toolTip1.UseAnimation = false;
 			this.toolTip1.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip1_Popup);
 			// 
 			// seFileName
@@ -112,7 +118,8 @@
             this.seFileName,
             this.seGenre,
             this.seGenre2,
-            this.seCaption});
+            this.seCaption,
+            this.columnHeader1});
 			this.listView1.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
 			this.listView1.FullRowSelect = true;
 			this.listView1.GridLines = true;
@@ -134,13 +141,17 @@
 			// 
 			this.seGenre2.Text = "ジャンル2";
 			// 
+			// columnHeader1
+			// 
+			this.columnHeader1.Text = "再生時間";
+			// 
 			// button1
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.button1.Location = new System.Drawing.Point(10, 18);
 			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(84, 43);
+			this.button1.Size = new System.Drawing.Size(84, 33);
 			this.button1.TabIndex = 8;
 			this.button1.Text = "再生▷";
 			this.button1.UseVisualStyleBackColor = true;
@@ -191,7 +202,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.textCopyStr.Location = new System.Drawing.Point(6, 50);
 			this.textCopyStr.Name = "textCopyStr";
-			this.textCopyStr.Size = new System.Drawing.Size(274, 19);
+			this.textCopyStr.Size = new System.Drawing.Size(284, 19);
 			this.textCopyStr.TabIndex = 0;
 			this.textCopyStr.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
 			// 
@@ -214,7 +225,7 @@
             "9番目の形式でコピーする"});
 			this.copyStrSelect.Location = new System.Drawing.Point(6, 24);
 			this.copyStrSelect.Name = "copyStrSelect";
-			this.copyStrSelect.Size = new System.Drawing.Size(274, 20);
+			this.copyStrSelect.Size = new System.Drawing.Size(284, 20);
 			this.copyStrSelect.TabIndex = 7;
 			this.copyStrSelect.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
 			// 
@@ -222,20 +233,33 @@
 			// 
 			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox5.Controls.Add(this.button3);
 			this.groupBox5.Controls.Add(this.copyStrSelect);
 			this.groupBox5.Controls.Add(this.textCopyStr);
-			this.groupBox5.Location = new System.Drawing.Point(3, 392);
+			this.groupBox5.Location = new System.Drawing.Point(3, 370);
 			this.groupBox5.Name = "groupBox5";
-			this.groupBox5.Size = new System.Drawing.Size(296, 84);
+			this.groupBox5.Size = new System.Drawing.Size(296, 106);
 			this.groupBox5.TabIndex = 13;
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "コピー文の選択・編集";
+			// 
+			// button3
+			// 
+			this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.button3.Location = new System.Drawing.Point(6, 75);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(284, 25);
+			this.button3.TabIndex = 8;
+			this.button3.Text = "汎用コピー文をコピー";
+			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.button3_Click_1);
 			// 
 			// checkBox9
 			// 
 			this.checkBox9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox9.AutoSize = true;
-			this.checkBox9.Location = new System.Drawing.Point(194, 75);
+			this.checkBox9.Location = new System.Drawing.Point(13, 86);
 			this.checkBox9.Name = "checkBox9";
 			this.checkBox9.Size = new System.Drawing.Size(96, 16);
 			this.checkBox9.TabIndex = 23;
@@ -247,7 +271,7 @@
 			this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.button2.Location = new System.Drawing.Point(100, 18);
 			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(190, 43);
+			this.button2.Size = new System.Drawing.Size(190, 33);
 			this.button2.TabIndex = 10;
 			this.button2.Text = "停止■";
 			this.button2.UseVisualStyleBackColor = true;
@@ -311,6 +335,10 @@
 			// 
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Controls.Add(this.label2);
+			this.groupBox1.Controls.Add(this.tbTotalTime);
+			this.groupBox1.Controls.Add(this.tbPlayTime);
+			this.groupBox1.Controls.Add(this.progressBar1);
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.trackBar1);
 			this.groupBox1.Controls.Add(this.checkBox9);
@@ -323,14 +351,52 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "音の再生・停止・音量";
 			// 
+			// label2
+			// 
+			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(207, 89);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(11, 12);
+			this.label2.TabIndex = 34;
+			this.label2.Text = "/";
+			// 
+			// tbTotalTime
+			// 
+			this.tbTotalTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.tbTotalTime.Location = new System.Drawing.Point(221, 85);
+			this.tbTotalTime.Name = "tbTotalTime";
+			this.tbTotalTime.Size = new System.Drawing.Size(68, 19);
+			this.tbTotalTime.TabIndex = 33;
+			// 
+			// tbPlayTime
+			// 
+			this.tbPlayTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.tbPlayTime.Location = new System.Drawing.Point(135, 85);
+			this.tbPlayTime.Name = "tbPlayTime";
+			this.tbPlayTime.Size = new System.Drawing.Size(68, 19);
+			this.tbPlayTime.TabIndex = 32;
+			// 
+			// progressBar1
+			// 
+			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.progressBar1.Location = new System.Drawing.Point(10, 57);
+			this.progressBar1.Maximum = 1000;
+			this.progressBar1.Name = "progressBar1";
+			this.progressBar1.Size = new System.Drawing.Size(279, 22);
+			this.progressBar1.TabIndex = 28;
+			this.progressBar1.Click += new System.EventHandler(this.progressBar1_Click);
+			this.progressBar1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.progressBar1_MouseMove);
+			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
 			this.label1.Location = new System.Drawing.Point(11, 109);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(197, 12);
+			this.label1.Size = new System.Drawing.Size(78, 12);
 			this.label1.TabIndex = 27;
-			this.label1.Text = "音量ボリューム  (wavには適用されません";
+			this.label1.Text = "音量ボリューム ";
 			// 
 			// trackBar1
 			// 
@@ -364,7 +430,7 @@
             this.menuItemCombo1});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(949, 30);
+			this.menuStrip1.Size = new System.Drawing.Size(949, 27);
 			this.menuStrip1.TabIndex = 27;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -376,27 +442,27 @@
             this.menuItemCheck3,
             this.menuItemCheck4});
 			this.オプション設定ToolStripMenuItem.Name = "オプション設定ToolStripMenuItem";
-			this.オプション設定ToolStripMenuItem.Size = new System.Drawing.Size(104, 26);
+			this.オプション設定ToolStripMenuItem.Size = new System.Drawing.Size(87, 23);
 			this.オプション設定ToolStripMenuItem.Text = "オプション設定";
 			// 
 			// menuItemCheck1
 			// 
 			this.menuItemCheck1.Name = "menuItemCheck1";
-			this.menuItemCheck1.Size = new System.Drawing.Size(316, 22);
+			this.menuItemCheck1.Size = new System.Drawing.Size(280, 22);
 			this.menuItemCheck1.Text = "コピー時に自動的に秀丸に貼付けを行う";
 			this.menuItemCheck1.Click += new System.EventHandler(this.menuItemCheck1_Click);
 			// 
 			// menuItemCheck2
 			// 
 			this.menuItemCheck2.Name = "menuItemCheck2";
-			this.menuItemCheck2.Size = new System.Drawing.Size(316, 22);
+			this.menuItemCheck2.Size = new System.Drawing.Size(280, 22);
 			this.menuItemCheck2.Text = "ウインドウを常に一番上に表示する";
 			this.menuItemCheck2.Click += new System.EventHandler(this.menuItemCheck2_Click);
 			// 
 			// menuItemCheck3
 			// 
 			this.menuItemCheck3.Name = "menuItemCheck3";
-			this.menuItemCheck3.Size = new System.Drawing.Size(316, 22);
+			this.menuItemCheck3.Size = new System.Drawing.Size(280, 22);
 			this.menuItemCheck3.Text = "音の種類切替時にコピー分も切り替える";
 			this.menuItemCheck3.Click += new System.EventHandler(this.menuItemCheck3_Click);
 			// 
@@ -405,7 +471,7 @@
 			this.menuItemCheck4.Checked = true;
 			this.menuItemCheck4.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.menuItemCheck4.Name = "menuItemCheck4";
-			this.menuItemCheck4.Size = new System.Drawing.Size(316, 22);
+			this.menuItemCheck4.Size = new System.Drawing.Size(280, 22);
 			this.menuItemCheck4.Text = "音をリストで選択した時に自動的に再生する";
 			this.menuItemCheck4.Click += new System.EventHandler(this.menuItemCheck4_Click);
 			// 
@@ -413,7 +479,7 @@
 			// 
 			this.menuItemCombo1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.menuItemCombo1.Name = "menuItemCombo1";
-			this.menuItemCombo1.Size = new System.Drawing.Size(210, 26);
+			this.menuItemCombo1.Size = new System.Drawing.Size(210, 23);
 			this.menuItemCombo1.Text = "検索はここ (正規表現つかえる！";
 			this.menuItemCombo1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.menuItemCombo1_KeyDown);
 			this.menuItemCombo1.TextChanged += new System.EventHandler(this.menuItemCombo1_TextChanged);
@@ -425,7 +491,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.treeView1.Location = new System.Drawing.Point(3, 3);
 			this.treeView1.Name = "treeView1";
-			this.treeView1.Size = new System.Drawing.Size(296, 386);
+			this.treeView1.Size = new System.Drawing.Size(296, 361);
 			this.treeView1.TabIndex = 28;
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
 			// 
@@ -526,6 +592,12 @@
 		private System.Windows.Forms.TreeView treeView1;
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.ColumnHeader columnHeader1;
+		private System.Windows.Forms.ProgressBar progressBar1;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.TextBox tbTotalTime;
+		private System.Windows.Forms.TextBox tbPlayTime;
+		private System.Windows.Forms.Button button3;
 	}
 }
 

@@ -11,7 +11,7 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <StartWorkingDirectory>D:\ito-develop\真・恋姫†無双シリーズ\真・恋姫†無双革命 呉\svn\_report\新しいフォルダー</StartWorkingDirectory>
+    <StartWorkingDirectory>D:\終了したプロジェクト\アマカノ2\svn\_tool\SE・BGMツール_New</StartWorkingDirectory>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
@@ -20,5 +20,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <EnableSecurityDebugging>false</EnableSecurityDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <StartWorkingDirectory>D:\恋姫\戦国ex\svn\_report\SE・BGMツール</StartWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <StartWorkingDirectory>D:\恋姫\戦国ex\壱\cs2Svn\_report\SE・BGMツール</StartWorkingDirectory>
   </PropertyGroup>
 </Project>

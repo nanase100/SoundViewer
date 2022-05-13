@@ -54,7 +54,7 @@ namespace SEViewer
 		{
 			InitializeComponent();
 			
-			m_soundPlayer = new soundPlayer();
+			m_soundPlayer = new soundPlayer(this);
 
             System.Math.Max(10, System.Math.Min(5, 8));
 
@@ -278,8 +278,10 @@ namespace SEViewer
 					continue;
 
 				System.Windows.Forms.ListViewItem tmpItem = listView1.Items.Add(filePath);
-			
-				if (Program.m_data.GetDataSet(m_soundModeType)[filePath].m_isExist == false && m_soundModeType != 4 )
+
+				string picfilePath = System.IO.Path.GetFileName(filePath);
+
+				if (Program.m_data.GetDataSet(m_soundModeType)[picfilePath].m_isExist == false && m_soundModeType != 4 )
 				{
 					tmpItem.ForeColor = Color.Red;
 				}else{
@@ -288,7 +290,22 @@ namespace SEViewer
 				tmpItem.SubItems.Add(Program.m_data.GetGenre(  filePath,m_soundModeType));
                 tmpItem.SubItems.Add(Program.m_data.GetGenre2(filePath, m_soundModeType));
                 tmpItem.SubItems.Add(Program.m_data.GetSummary(filePath,m_soundModeType));
-				
+
+				string fileName = Program.m_data.soundPath[m_soundModeType] + filePath;
+				string playLength = Program.m_data.GetPlayLength(filePath, m_soundModeType);
+				//初回読み込み
+				if (playLength == "-1" && System.IO.File.Exists(fileName))
+				{
+					playLength = m_soundPlayer.GetLengthTmp(fileName).ToString();
+					Program.m_data.SetPlayLength(filePath, playLength, m_soundModeType);
+				}
+				if( playLength.IndexOf('.') != -1 ) playLength = playLength.Substring(0,playLength.IndexOf('.')+2);
+
+
+				tmpItem.SubItems.Add(playLength+" 秒");
+
+
+
 			}
 			int id = copyStrSelect.SelectedIndex-1;
 			m_receiveEventFlg = true;
@@ -410,7 +427,7 @@ namespace SEViewer
 			PlaySelectSound();
 		}
 
-		private void PlaySelectSound()
+		private void PlaySelectSound( double second = 0)
 		{
 			timer1.Stop();
 
@@ -435,14 +452,13 @@ namespace SEViewer
 			} else {
 				if (System.IO.File.Exists(fileFullPath) == false ) return;
 			}
+			
 
-
-			if (m_soundPlayer.PlaySound(fileFullPath, trackBar1.Value, isLoop))
+			if (m_soundPlayer.PlaySound(fileFullPath, trackBar1.Value, isLoop, second))
 			{
 				timer1.Start();
+				tbTotalTime.Text = LeftSub(m_soundPlayer.GetLength().ToString(), 5) + " 秒";
 			}
-
-		
 		}
 
 		private void StopSound()
@@ -483,7 +499,7 @@ namespace SEViewer
 
 			timer1.Stop();
 			m_soundPlayer.StopSound();
-			m_soundPlayer.ReleaseWIO();
+
 			SaveSet();
 		}
 
@@ -546,24 +562,17 @@ namespace SEViewer
 		}
 
 		//-----------------------------------------------------------------------------------------------
-		//ogg再生のストリーミング呼び出し
-		//-----------------------------------------------------------------------------------------------
-		private void Feed()
-		{
-			m_soundPlayer.Streaming();
-		}
-
-		//-----------------------------------------------------------------------------------------------
 		//ogg再生のタイマーイベント
 		//-----------------------------------------------------------------------------------------------
 		private void timer1_Tick(object sender, EventArgs e)
 		{
-			bool isLoop = checkBox9.Checked;
-			if( m_soundPlayer.Streaming( isLoop ) == false )
-			{
-				//ここで止めるとバッファに残った音データを無視して停止してしまう…
-//				StopSound();
-			}
+			int now = m_soundPlayer.GetNowPlayPercent()*10;
+			if (now == -1) now = 0;
+			progressBar1.Value = 1000;
+			progressBar1.Value = now;
+
+			tbPlayTime.Text = LeftSub(m_soundPlayer.GetNowPosition().ToString(), 5) + " 秒";
+
 		}
 
 		//-----------------------------------------------------------------------------------------------
@@ -695,9 +704,19 @@ namespace SEViewer
 
 			SendKey();
 		}
-		
-		
-		
+
+		private void generalCopyStringToClipboard()
+		{
+			string copyFileName =  Program.m_data.generalCopyStr;
+
+			copyFileName = copyFileName.Replace("%n", System.Environment.NewLine);
+
+
+			copyFileName = copyFileName.Replace("%t", "	");
+
+			if (copyFileName != "") System.Windows.Forms.Clipboard.SetText(copyFileName);
+		}
+
 		//-----------------------------------------------------------------------------------------------
 		//
 		//-----------------------------------------------------------------------------------------------
@@ -823,7 +842,7 @@ namespace SEViewer
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
-			m_soundPlayer.SetOggVolume( trackBar1.Value );
+			m_soundPlayer.SetVolume( trackBar1.Value );
 		}
 
 
@@ -942,6 +961,46 @@ namespace SEViewer
 			if( e.KeyCode == Keys.Enter ){
 				menuItemCombo1.Items.Add(menuItemCombo1.Text);
 			}
+		}
+
+		private void progressBar1_Click(object sender, EventArgs e)
+		{
+			double per = (double)((System.Windows.Forms.MouseEventArgs)e).X / (double)progressBar1.Width;
+			double second = m_soundPlayer.GetLength() * per;
+			PlaySelectSound(second);
+		}
+
+		private void progressBar1_MouseMove(object sender, MouseEventArgs e)
+		{
+			double per = (double)((System.Windows.Forms.MouseEventArgs)e).X / (double)progressBar1.Width;
+			double second = m_soundPlayer.GetLength() * per;
+			
+			toolTip1.ToolTipTitle = "";
+			toolTip1.SetToolTip( progressBar1, LeftSub(second.ToString(),5)+"秒");
+		
+		}
+
+
+		public static string LeftSub(string str, int len)
+		{
+			if (len < 0)
+			{
+				throw new ArgumentException("引数'len'は0以上でなければなりません。");
+			}
+			if (str == null)
+			{
+				return "";
+			}
+			if (str.Length <= len)
+			{
+				return str;
+			}
+			return str.Substring(0, len);
+		}
+
+		private void button3_Click_1(object sender, EventArgs e)
+		{
+			generalCopyStringToClipboard();
 		}
 
 		/*
