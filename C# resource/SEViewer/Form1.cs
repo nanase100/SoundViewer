@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SEViewer
 {
@@ -705,17 +706,17 @@ namespace SEViewer
 			SendKey();
 		}
 
-		private void generalCopyStringToClipboard()
+		private void SoundStopTextCopyStringToClipboard( bool isBgm)
 		{
-			string copyFileName =  Program.m_data.generalCopyStr;
+			string copyFileName =  ( isBgm ? Program.m_data.generalCopyStrBGM : Program.m_data.generalCopyStrSE );
 
 			copyFileName = copyFileName.Replace("%n", System.Environment.NewLine);
-
 
 			copyFileName = copyFileName.Replace("%t", "	");
 
 			if (copyFileName != "") System.Windows.Forms.Clipboard.SetText(copyFileName);
 		}
+
 
 		//-----------------------------------------------------------------------------------------------
 		//
@@ -976,7 +977,9 @@ namespace SEViewer
 			double second = m_soundPlayer.GetLength() * per;
 			
 			toolTip1.ToolTipTitle = "";
+		
 			toolTip1.SetToolTip( progressBar1, LeftSub(second.ToString(),5)+"秒");
+			
 		
 		}
 
@@ -1000,7 +1003,12 @@ namespace SEViewer
 
 		private void button3_Click_1(object sender, EventArgs e)
 		{
-			generalCopyStringToClipboard();
+			SoundStopTextCopyStringToClipboard(true);
+		}
+
+		private void button4_Click(object sender, EventArgs e)
+		{
+			SoundStopTextCopyStringToClipboard(false);
 		}
 
 		/*

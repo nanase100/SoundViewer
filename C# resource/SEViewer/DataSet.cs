@@ -30,7 +30,8 @@ namespace SEViewer
 		public List<string>	音リストテキストのパス			{ get; set; } = new List<string>();
 		public List<string>	コピー文						{ get; set; } = new List<string>();
 		public List<bool>	機能オプションONOFF			{ get; set; } = new List<bool>();
-		public string		汎用コピー文					{ get; set; }
+		public string		BGM停止命令文					{ get; set; }
+		public string		SE停止命令文					{ get; set; }
 	};
 
     //-----------------------------------------------------------------------------------------------
@@ -62,7 +63,8 @@ namespace SEViewer
 
 		public List<int>		m_toolOption		{ set; get; } = new List<int>();
 
-		public string generalCopyStr { set;get; }
+		public string generalCopyStrBGM { set;get; }
+		public string generalCopyStrSE { set;get; }
 
 		readJsonType1 jsonData;
 
@@ -231,7 +233,8 @@ namespace SEViewer
             if (m_height < 100) m_height = 100;
             if (m_width < 100)	m_width = 100;
 
-			generalCopyStr = jsonData.汎用コピー文;
+			generalCopyStrBGM = jsonData.BGM停止命令文;
+			generalCopyStrSE = jsonData.SE停止命令文;
 
 			}
 			catch( System.Exception ex)
@@ -347,7 +350,8 @@ namespace SEViewer
 			for( int i = 0; i < copyStr.Count; i++ )
 				jsonData.コピー文[i] = copyStr[i];
 
-			jsonData.汎用コピー文 = generalCopyStr;
+			jsonData.BGM停止命令文 = generalCopyStrBGM;
+			jsonData.SE停止命令文 = generalCopyStrSE;
 
 			jsonData.画面分割幅 = m_splitSize;
 

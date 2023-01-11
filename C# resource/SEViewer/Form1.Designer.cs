@@ -45,6 +45,7 @@
 			this.textCopyStr = new System.Windows.Forms.TextBox();
 			this.copyStrSelect = new System.Windows.Forms.ComboBox();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.button4 = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
 			this.checkBox9 = new System.Windows.Forms.CheckBox();
 			this.button2 = new System.Windows.Forms.Button();
@@ -87,9 +88,9 @@
 			// toolTip1
 			// 
 			this.toolTip1.AutoPopDelay = 5000;
-			this.toolTip1.InitialDelay = 1000;
-			this.toolTip1.IsBalloon = true;
-			this.toolTip1.ReshowDelay = 1000;
+			this.toolTip1.InitialDelay = 0;
+//			this.toolTip1.IsBalloon = true;
+			this.toolTip1.ReshowDelay = 0;
 			this.toolTip1.UseAnimation = false;
 			this.toolTip1.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip1_Popup);
 			// 
@@ -124,7 +125,7 @@
 			this.listView1.FullRowSelect = true;
 			this.listView1.GridLines = true;
 			this.listView1.HideSelection = false;
-			this.listView1.Location = new System.Drawing.Point(3, 29);
+			this.listView1.Location = new System.Drawing.Point(18, 20);
 			this.listView1.MultiSelect = false;
 			this.listView1.Name = "listView1";
 			this.listView1.Size = new System.Drawing.Size(607, 603);
@@ -233,6 +234,7 @@
 			// 
 			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox5.Controls.Add(this.button4);
 			this.groupBox5.Controls.Add(this.button3);
 			this.groupBox5.Controls.Add(this.copyStrSelect);
 			this.groupBox5.Controls.Add(this.textCopyStr);
@@ -243,15 +245,26 @@
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "コピー文の選択・編集";
 			// 
+			// button4
+			// 
+			this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.button4.Location = new System.Drawing.Point(150, 75);
+			this.button4.Name = "button4";
+			this.button4.Size = new System.Drawing.Size(139, 25);
+			this.button4.TabIndex = 9;
+			this.button4.Text = "SE停止命令コピー";
+			this.button4.UseVisualStyleBackColor = true;
+			this.button4.Click += new System.EventHandler(this.button4_Click);
+			// 
 			// button3
 			// 
 			this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.button3.Location = new System.Drawing.Point(6, 75);
 			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(284, 25);
+			this.button3.Size = new System.Drawing.Size(143, 25);
 			this.button3.TabIndex = 8;
-			this.button3.Text = "汎用コピー文をコピー";
+			this.button3.Text = "BGM停止命令コピー";
 			this.button3.UseVisualStyleBackColor = true;
 			this.button3.Click += new System.EventHandler(this.button3_Click_1);
 			// 
@@ -598,6 +611,7 @@
 		private System.Windows.Forms.TextBox tbTotalTime;
 		private System.Windows.Forms.TextBox tbPlayTime;
 		private System.Windows.Forms.Button button3;
-	}
+        private System.Windows.Forms.Button button4;
+    }
 }
 

@@ -22,7 +22,7 @@
     <EnableSecurityDebugging>false</EnableSecurityDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <StartWorkingDirectory>D:\恋姫\戦国ex\svn\_report\SE・BGMツール</StartWorkingDirectory>
+    <StartWorkingDirectory>D:\恋姫\真・恋姫†英雄譚456\5\svn\_report\SoundViewer</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <StartWorkingDirectory>D:\恋姫\戦国ex\壱\cs2Svn\_report\SE・BGMツール</StartWorkingDirectory>
