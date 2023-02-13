@@ -45,6 +45,7 @@
 			this.textCopyStr = new System.Windows.Forms.TextBox();
 			this.copyStrSelect = new System.Windows.Forms.ComboBox();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.button5 = new System.Windows.Forms.Button();
 			this.button4 = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
 			this.checkBox9 = new System.Windows.Forms.CheckBox();
@@ -89,7 +90,6 @@
 			// 
 			this.toolTip1.AutoPopDelay = 5000;
 			this.toolTip1.InitialDelay = 0;
-//			this.toolTip1.IsBalloon = true;
 			this.toolTip1.ReshowDelay = 0;
 			this.toolTip1.UseAnimation = false;
 			this.toolTip1.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip1_Popup);
@@ -234,6 +234,7 @@
 			// 
 			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox5.Controls.Add(this.button5);
 			this.groupBox5.Controls.Add(this.button4);
 			this.groupBox5.Controls.Add(this.button3);
 			this.groupBox5.Controls.Add(this.copyStrSelect);
@@ -245,26 +246,33 @@
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "コピー文の選択・編集";
 			// 
+			// button5
+			// 
+			this.button5.Location = new System.Drawing.Point(209, 75);
+			this.button5.Name = "button5";
+			this.button5.Size = new System.Drawing.Size(81, 25);
+			this.button5.TabIndex = 10;
+			this.button5.Text = "タブ毎コピー";
+			this.button5.UseVisualStyleBackColor = true;
+			this.button5.Click += new System.EventHandler(this.button5_Click);
+			// 
 			// button4
 			// 
-			this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.button4.Location = new System.Drawing.Point(150, 75);
+			this.button4.Location = new System.Drawing.Point(121, 75);
 			this.button4.Name = "button4";
-			this.button4.Size = new System.Drawing.Size(139, 25);
+			this.button4.Size = new System.Drawing.Size(82, 25);
 			this.button4.TabIndex = 9;
-			this.button4.Text = "SE停止命令コピー";
+			this.button4.Text = "SE停止命令";
 			this.button4.UseVisualStyleBackColor = true;
 			this.button4.Click += new System.EventHandler(this.button4_Click);
 			// 
 			// button3
 			// 
-			this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.button3.Location = new System.Drawing.Point(6, 75);
 			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(143, 25);
+			this.button3.Size = new System.Drawing.Size(109, 25);
 			this.button3.TabIndex = 8;
-			this.button3.Text = "BGM停止命令コピー";
+			this.button3.Text = "BGM停止命令";
 			this.button3.UseVisualStyleBackColor = true;
 			this.button3.Click += new System.EventHandler(this.button3_Click_1);
 			// 
@@ -395,7 +403,7 @@
 			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.progressBar1.Location = new System.Drawing.Point(10, 57);
-			this.progressBar1.Maximum = 1000;
+			this.progressBar1.Maximum = 10000;
 			this.progressBar1.Name = "progressBar1";
 			this.progressBar1.Size = new System.Drawing.Size(279, 22);
 			this.progressBar1.TabIndex = 28;
@@ -612,6 +620,7 @@
 		private System.Windows.Forms.TextBox tbPlayTime;
 		private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
-    }
+		private System.Windows.Forms.Button button5;
+	}
 }
 

@@ -11,13 +11,13 @@ using System.Drawing;
 
 namespace SEViewer
 {
-    class DataSet
-    {
-        public string m_fileName    { get; set; }
-        public string m_summary     { get; set; }
-        public bool m_isExist       { get; set; }
-        public string m_genre1      { get; set; }
-        public string m_genre2      { get; set; }
+	class DataSet
+	{
+		public string m_fileName	{ get; set; }
+		public string m_summary	 { get; set; }
+		public bool m_isExist	   { get; set; }
+		public string m_genre1	  { get; set; }
+		public string m_genre2	  { get; set; }
 		public string playLength	{ get; set; } = "-1";
 	};
 
@@ -25,132 +25,136 @@ namespace SEViewer
 	public class readJsonType1  {
 		public List<int>	ウインドウ座標					{ get; set; } = new List<int>();
 		public List<int>	音リストのカラム幅				{ get; set; } = new List<int>();
-		public int			画面分割幅					{ get; set; }
+		public int			画面分割幅						{ get; set; }
 		public List<string>	音ファイルのパス				{ get; set; } = new List<string>();
 		public List<string>	音リストテキストのパス			{ get; set; } = new List<string>();
 		public List<string>	コピー文						{ get; set; } = new List<string>();
-		public List<bool>	機能オプションONOFF			{ get; set; } = new List<bool>();
-		public string		BGM停止命令文					{ get; set; }
-		public string		SE停止命令文					{ get; set; }
+		public List<bool>	機能オプションONOFF				{ get; set; } = new List<bool>();
+		public string		BGM停止命令文					{ get; set; } = "";
+		public string		SE停止命令文					{ get; set; } = "";
+		public List<string>	タブ毎命令文					{ get; set; }  = new List<string>();
 	};
 
-    //-----------------------------------------------------------------------------------------------
-    //
-    //se.txtのSEの情報などをまとめて持っておくクラス   
-    //
-    //-----------------------------------------------------------------------------------------------
-    class DataSetManager
-    {
+	//-----------------------------------------------------------------------------------------------
+	//
+	//se.txtのSEの情報などをまとめて持っておくクラス   
+	//
+	//-----------------------------------------------------------------------------------------------
+	class DataSetManager
+	{
 
-        public const int MAX_CATEGORY = 5;
+		public const int MAX_CATEGORY = 5;
 
 		public string[] soundPath	{ get; set; }
 
 		public string[] txtPath { get; set; }
 
-        public List<string> copyStr { get; set; }
+		public List<string> copyStr { get; set; }
 
-        public int m_left		{ set; get; }
-        public int m_top		{ set; get; }
-        public int m_width		{ set; get; }
-        public int m_height		{ set; get; }
-        public int m_col1Size	{ set; get; }
-        public int m_col2Size	{ set; get; }
-        public int m_col3Size	{ set; get; }
-        public int m_col4Size	{ set; get; }
+		public int m_left		{ set; get; }
+		public int m_top		{ set; get; }
+		public int m_width		{ set; get; }
+		public int m_height		{ set; get; }
+		public int m_col1Size	{ set; get; }
+		public int m_col2Size	{ set; get; }
+		public int m_col3Size	{ set; get; }
+		public int m_col4Size	{ set; get; }
 
-		public int m_splitSize             { set; get; }
+		public int m_splitSize			 { set; get; }
 
 		public List<int>		m_toolOption		{ set; get; } = new List<int>();
 
-		public string generalCopyStrBGM { set;get; }
-		public string generalCopyStrSE { set;get; }
+		public string copyStrBGM { set; get; } = "";
+		public string copyStrSE { set; get; } = "";
+
+		public List<string> copyStrByTab { set; get; }
 
 		readJsonType1 jsonData;
 
-        //メインのデータ
-        private Dictionary<string, DataSet>[] m_dataMaster;
+		//メインのデータ
+		private Dictionary<string, DataSet>[] m_dataMaster;
 
-        //絞込の後に画面に表示される m_dataMasterから抜き出した参照リスト
-        //private List<DataSet> m_dataRefList = new List<DataSet>();
+		//絞込の後に画面に表示される m_dataMasterから抜き出した参照リスト
+		//private List<DataSet> m_dataRefList = new List<DataSet>();
 
-        public HashSet<string>[] m_genreList { get; set; }
-        public HashSet<string>[] m_genreList2 { get; set; }
+		public HashSet<string>[] m_genreList { get; set; }
+		public HashSet<string>[] m_genreList2 { get; set; }
 		public List<Color>[]		m_genreColorList { get; set; }
 
-        public Dictionary<string, DataSet>  GetDataSet(int type)
+		public Dictionary<string, DataSet>  GetDataSet(int type)
 		{
 			return m_dataMaster[type];
 		}
 
-        //-----------------------------------------------------------------------------------------------
-        //コンストラクタ
-        //-----------------------------------------------------------------------------------------------
-        public DataSetManager()
-        {
-            m_dataMaster	    = new Dictionary<string, DataSet>[MAX_CATEGORY];
-            m_genreList		    = new HashSet<string>[MAX_CATEGORY];
-            m_genreList2		= new HashSet<string>[MAX_CATEGORY];
-			m_genreColorList    = new List<Color>[MAX_CATEGORY];
+		//-----------------------------------------------------------------------------------------------
+		//コンストラクタ
+		//-----------------------------------------------------------------------------------------------
+		public DataSetManager()
+		{
+			m_dataMaster		= new Dictionary<string, DataSet>[MAX_CATEGORY];
+			m_genreList			= new HashSet<string>[MAX_CATEGORY];
+			m_genreList2		= new HashSet<string>[MAX_CATEGORY];
+			m_genreColorList	= new List<Color>[MAX_CATEGORY];
 			
 
-            for (int i = 0; i < MAX_CATEGORY; i++)
+			for (int i = 0; i < MAX_CATEGORY; i++)
 			{
 				m_dataMaster[i]		= new Dictionary<string, DataSet>();
-                m_genreList[i]		= new HashSet<string>();
-                m_genreList2[i]		= new HashSet<string>();
+				m_genreList[i]		= new HashSet<string>();
+				m_genreList2[i]		= new HashSet<string>();
 				m_genreColorList[i] = new List<Color>();
-            }
+			}
 
-            soundPath   = new string[MAX_CATEGORY];
-			txtPath     = new string[MAX_CATEGORY];
-        }
+			soundPath   = new string[MAX_CATEGORY];
+			txtPath		= new string[MAX_CATEGORY];
 
-        //-----------------------------------------------------------------------------------------------
-        //ディクショナリアクセサ
-        //-----------------------------------------------------------------------------------------------
+			copyStrByTab = new List<string>();
+		}
+
+		//-----------------------------------------------------------------------------------------------
+		//ディクショナリアクセサ
+		//-----------------------------------------------------------------------------------------------
 		public bool SetSummary(string keyFileName, string summary, int type )
-        {
+		{
 			if (m_dataMaster[type].ContainsKey(keyFileName) == false) return false;
 
 			m_dataMaster[type][keyFileName].m_summary = summary;
 
- 
-            return true;
-        }
+			return true;
+		}
 
 
-        //-----------------------------------------------------------------------------------------------
-        //ディクショナリアクセサ
-        //-----------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------
+		//ディクショナリアクセサ
+		//-----------------------------------------------------------------------------------------------
 		public string GetSummary(string keyFileName, int type )
-        {
+		{
 			if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
 
 			return m_dataMaster[type][keyFileName].m_summary;
 
-        }
+		}
 
 
-        //-----------------------------------------------------------------------------------------------
-        //ディクショナリアクセサ
-        //-----------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------
+		//ディクショナリアクセサ
+		//-----------------------------------------------------------------------------------------------
 		public string GetGenre(string keyFileName, int type )
-        {
-            if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
+		{
+			if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
 
 			return m_dataMaster[type][keyFileName].m_genre1;
-        }
+		}
 
-        //-----------------------------------------------------------------------------------------------
-        //ディクショナリアクセサ
-        //-----------------------------------------------------------------------------------------------
-        public string GetGenre2(string keyFileName, int type)
-        {
-            if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
+		//-----------------------------------------------------------------------------------------------
+		//ディクショナリアクセサ
+		//-----------------------------------------------------------------------------------------------
+		public string GetGenre2(string keyFileName, int type)
+		{
+			if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
 
-            return m_dataMaster[type][keyFileName].m_genre2;
-        }
+			return m_dataMaster[type][keyFileName].m_genre2;
+		}
 
 
 		//-----------------------------------------------------------------------------------------------
@@ -179,48 +183,48 @@ namespace SEViewer
 		//
 		//-----------------------------------------------------------------------------------------------
 		public bool settingLoad(string settingFilePath )
-        {
+		{
 
 			try{
-            //ここから設定の読み込み
+			//ここから設定の読み込み
 
 			jsonData = JsonConvert.DeserializeObject<readJsonType1>(File.ReadAllText(settingFilePath));
 			
 			
 			for (int i = 0; i < MAX_CATEGORY; i++)
-            {
-                soundPath[i] = MainFunction.Add_EndPathSeparator(jsonData.音ファイルのパス[i]);
+			{
+				soundPath[i] = MainFunction.Add_EndPathSeparator(jsonData.音ファイルのパス[i]);
 
 				txtPath[i] = jsonData.音リストテキストのパス[i];
-            }
+			}
 			
 			copyStr = new List<string>();
 			for( int i = 0; i < jsonData.コピー文.Count; i++ )
 				copyStr.Add( jsonData.コピー文[i] );
 
-            //window座標とか
-            m_left = 0;
-            m_top = 0;
-            m_width = 780;
-            m_height = 480;
+			//window座標とか
+			m_left = 0;
+			m_top = 0;
+			m_width = 780;
+			m_height = 480;
 
-            m_col1Size = 200;
-            m_col2Size = 80;
-            m_col3Size = 80;
-            m_col4Size = 400;
+			m_col1Size = 200;
+			m_col2Size = 80;
+			m_col3Size = 80;
+			m_col4Size = 400;
 
 			m_splitSize = jsonData.画面分割幅;
 
 			//window座標とか
-            m_left	= jsonData.ウインドウ座標[0];
-            m_top	= jsonData.ウインドウ座標[1];
-            m_width = jsonData.ウインドウ座標[2];
-            m_height= jsonData.ウインドウ座標[3];
+			m_left	= jsonData.ウインドウ座標[0];
+			m_top	= jsonData.ウインドウ座標[1];
+			m_width = jsonData.ウインドウ座標[2];
+			m_height= jsonData.ウインドウ座標[3];
 
-            m_col1Size = jsonData.音リストのカラム幅[0];
-            m_col2Size = jsonData.音リストのカラム幅[1];
-            m_col3Size = jsonData.音リストのカラム幅[2];
-            m_col4Size = jsonData.音リストのカラム幅[3];
+			m_col1Size = jsonData.音リストのカラム幅[0];
+			m_col2Size = jsonData.音リストのカラム幅[1];
+			m_col3Size = jsonData.音リストのカラム幅[2];
+			m_col4Size = jsonData.音リストのカラム幅[3];
 
 			//ツールオプションのon/off
 			for( int i = 0; i < jsonData.機能オプションONOFF.Count; i++ )
@@ -228,13 +232,15 @@ namespace SEViewer
 				m_toolOption.Add((jsonData.機能オプションONOFF[i] == true?1:0));
 			}
 
-            if (m_left < 0)		m_left = 0;
-            if (m_top < 0)		m_top = 0;
-            if (m_height < 100) m_height = 100;
-            if (m_width < 100)	m_width = 100;
+			if (m_left < 0)		m_left = 0;
+			if (m_top < 0)		m_top = 0;
+			if (m_height < 100) m_height = 100;
+			if (m_width < 100)	m_width = 100;
 
-			generalCopyStrBGM = jsonData.BGM停止命令文;
-			generalCopyStrSE = jsonData.SE停止命令文;
+			copyStrBGM = jsonData.BGM停止命令文;
+			copyStrSE = jsonData.SE停止命令文;
+
+			foreach( var tmp in jsonData.タブ毎命令文) copyStrByTab.Add( tmp );
 
 			}
 			catch( System.Exception ex)
@@ -242,47 +248,74 @@ namespace SEViewer
 			//	System.Windows.Forms.MessageBox.Show("設定ファイル(option.txt)が見つからない、または内容が正しくありません。\noption.txtの記述はjson形式となっています。");
 				return false;
 			}
-            //-----------------------------------------------------
+			//-----------------------------------------------------
 
-            DataSet tmpData;
-            Regex regGeter = new Regex("(.*),(.*)", RegexOptions.IgnoreCase);
-            Regex regGeter2 = new Regex("(.*),(.*),(.*)", RegexOptions.IgnoreCase);
-            Regex regIgnore = new Regex(@"//|^\n", RegexOptions.IgnoreCase);
+			DataSet tmpData;
+			Regex regGeter = new Regex("(.*),(.*)", RegexOptions.IgnoreCase);
+			Regex regGeter2 = new Regex("(.*),(.*),(.*)", RegexOptions.IgnoreCase);
+			Regex regIgnore = new Regex(@"//|^\n", RegexOptions.IgnoreCase);
 
 			Regex regGenre = new Regex("※(.*)");
-            Regex regGenreEx = new Regex("※(.*),#(..)(..)(..)");
+			Regex regGenreEx = new Regex("※(.*),#(..)(..)(..)");
 
-            string nowGenre = "未定ジャンル";
-            string uniGenre = "";
+			string nowGenre = "未定ジャンル";
+			string uniGenre = "";
 
-            Match matcIgnoreResult = null;
-            Match matchStringSplit = null;
+			Match matcIgnoreResult = null;
+			Match matchStringSplit = null;
 
-            for (int i = 0; i < MAX_CATEGORY; i++)
-            {
-                nowGenre = "未定ジャンル";
-                if (!(System.IO.File.Exists(txtPath[i])))
-                {
-                    //txtPath[i] = "";
-                    continue;
-                }
+			string workPath = "";
 
-                //csvを読み込
-                System.IO.StreamReader streamData = new System.IO.StreamReader(txtPath[i], System.Text.Encoding.Default);
+			for (int i = 0; i < MAX_CATEGORY; i++)
+			{
 
-                // 読み込んだ結果をすべて格納するための変数を宣言する
-                string stResult = string.Empty;
-                    
-                while (streamData.Peek() >= 0)
-                {
-                    string stBuffer = streamData.ReadLine();
+				nowGenre = "未定ジャンル";
 
-                    matcIgnoreResult = regIgnore.Match(stBuffer);
-                    if (matcIgnoreResult.Success == true) continue;
+				workPath = txtPath[i];
 
-                    uniGenre = "";
+				//
+				//favリストの先頭に "_" がある場合、つまり_optionと同じ形式を狙っている場合
+				if( i == MAX_CATEGORY-1)
+				{
+					if( workPath.IndexOf("_") == 0 )
+					{
+						workPath = workPath.Substring( 1 );
+					}
+					else
+					{
+						//そうでなければ逆に先頭に "_" を追加する
+						workPath = "_" + workPath;
+					}
 
-                    //まずジャンル色付きを読み込むか判別
+					if(!(System.IO.File.Exists(workPath)))
+					{
+						workPath = txtPath[i];
+					}
+				}
+
+
+				if (!(System.IO.File.Exists(workPath)))
+				{
+					//txtPath[i] = "";
+					continue;
+				}
+
+				//csvを読み込
+				System.IO.StreamReader streamData = new System.IO.StreamReader(workPath, System.Text.Encoding.Default);
+
+				// 読み込んだ結果をすべて格納するための変数を宣言する
+				string stResult = string.Empty;
+					
+				while (streamData.Peek() >= 0)
+				{
+					string stBuffer = streamData.ReadLine();
+
+					matcIgnoreResult = regIgnore.Match(stBuffer);
+					if (matcIgnoreResult.Success == true) continue;
+
+					uniGenre = "";
+
+					//まずジャンル色付きを読み込むか判別
 					matchStringSplit = regGenreEx.Match(stBuffer);
 					if (matchStringSplit.Success == true )	{
 						
@@ -314,57 +347,59 @@ namespace SEViewer
 								uniGenre = matchStringSplit.Groups[3].ToString();
 								m_genreList2[i].Add(nowGenre +"∴"+ uniGenre);
 							}
-                               
+							   
 							tmpData				= new DataSet();
 							tmpData.m_fileName  = matchStringSplit.Groups[1].ToString();
 							tmpData.m_summary   = matchStringSplit.Groups[2].ToString();
-							tmpData.m_genre1    = nowGenre;
-							tmpData.m_genre2    = uniGenre;
+							tmpData.m_genre1	= nowGenre;
+							tmpData.m_genre2	= uniGenre;
 							tmpData.m_isExist   = false;
 
 							m_dataMaster[i][tmpData.m_fileName] = tmpData;
 						}
 					}
-                }
-                streamData.Close();
-            }
-            
-            //-----------------------------------------------------
+				}
+				streamData.Close();
+			}
+			
+			//-----------------------------------------------------
 
-            return true;
-        }
+			return true;
+		}
 
-        //-----------------------------------------------------------------------------------------------
-        //オプション情報を保存する。
-        //-----------------------------------------------------------------------------------------------
-        public bool settingSave(string settingFilePath)
-        {
-            //ここから設定の書き込み			
+		//-----------------------------------------------------------------------------------------------
+		//オプション情報を保存する。
+		//-----------------------------------------------------------------------------------------------
+		public bool settingSave(string settingFilePath)
+		{
+			//ここから設定の書き込み			
 			for (int i = 0; i < MAX_CATEGORY; i++)
-            {
-                soundPath[i] = MainFunction.Add_EndPathSeparator(jsonData.音ファイルのパス[i]);
+			{
+				soundPath[i] = MainFunction.Add_EndPathSeparator(jsonData.音ファイルのパス[i]);
 
 				jsonData.音リストテキストのパス[i] = txtPath[i];
-            }
+			}
 			
 			for( int i = 0; i < copyStr.Count; i++ )
 				jsonData.コピー文[i] = copyStr[i];
 
-			jsonData.BGM停止命令文 = generalCopyStrBGM;
-			jsonData.SE停止命令文 = generalCopyStrSE;
+			jsonData.BGM停止命令文 = copyStrBGM;
+			jsonData.SE停止命令文 = copyStrSE;
+
+			jsonData.タブ毎命令文 = copyStrByTab;
 
 			jsonData.画面分割幅 = m_splitSize;
 
-            //window座標とか
-            jsonData.ウインドウ座標[0] = m_left;
-            jsonData.ウインドウ座標[1] = m_top;
-            jsonData.ウインドウ座標[2] = m_width;
-            jsonData.ウインドウ座標[3] = m_height;
+			//window座標とか
+			jsonData.ウインドウ座標[0] = m_left;
+			jsonData.ウインドウ座標[1] = m_top;
+			jsonData.ウインドウ座標[2] = m_width;
+			jsonData.ウインドウ座標[3] = m_height;
 
-            jsonData.音リストのカラム幅[0] =  m_col1Size;
-            jsonData.音リストのカラム幅[1] =  m_col2Size;
-            jsonData.音リストのカラム幅[2] =  m_col3Size;
-            jsonData.音リストのカラム幅[3] =  m_col4Size;
+			jsonData.音リストのカラム幅[0] =  m_col1Size;
+			jsonData.音リストのカラム幅[1] =  m_col2Size;
+			jsonData.音リストのカラム幅[2] =  m_col3Size;
+			jsonData.音リストのカラム幅[3] =  m_col4Size;
 
 			//ツールオプションのon/off
 			for( int i = 0; i < jsonData.機能オプションONOFF.Count; i++ )
@@ -372,29 +407,44 @@ namespace SEViewer
 				jsonData.機能オプションONOFF[i] = ( m_toolOption[i]== 1?true:false);;
 			}
 
-            var outputStr = JsonConvert.SerializeObject(jsonData);
+
+			//---------------------------------------
+
+
+			var outputStr = JsonConvert.SerializeObject(jsonData);
 
 			outputStr = format_json(outputStr);
 
 			File.WriteAllText(settingFilePath, outputStr );
 
 			return true;
-        }
+		}
 
 
 		private static string format_json(string json)
-        {
-            dynamic parsedJson = JsonConvert.DeserializeObject(json);
-            return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
-        }
+		{
+			dynamic parsedJson = JsonConvert.DeserializeObject(json);
+			return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+		}
 
 
 		public void SaveFavList()
 		{
 			//ここから設定の書き込み
-			System.IO.StreamWriter streamData = new System.IO.StreamWriter(this.txtPath[MAX_CATEGORY-1], false, System.Text.Encoding.Default);
+			string saveFavFilePath = this.txtPath[MAX_CATEGORY-1];
 
+			//favリストの先頭に "_" がある場合、つまり_optionと同じ形式を狙っている場合
+			if( saveFavFilePath.IndexOf("_") == 0 )
+			{
+				saveFavFilePath = saveFavFilePath.Substring( 1 );
+			}
+			else
+			{
+				//そうでなければ逆に先頭に "_" を追加する
+				saveFavFilePath = "_" + saveFavFilePath;
+			}
 
+			System.IO.StreamWriter streamData = new System.IO.StreamWriter( saveFavFilePath, false, System.Text.Encoding.Default);
 
 			string nowGenre = "";
 
@@ -410,35 +460,33 @@ namespace SEViewer
 				streamData.WriteLine(tmp.Value.m_fileName + "," + tmp.Value.m_summary);
 			}
 
-
-
 			streamData.Close();
 
 			return;
 		}
 
-        //-----------------------------------------------------------------------------------------------
-        //ディクショナリーにファイル情報を足しつつ、既存であればファイルの存在を確認したということでフラグ立て
-        //-----------------------------------------------------------------------------------------------
-        public void AddDictionary( List<string> existFileList, int type )
-        {
-            DataSet tmpDat;
-            foreach (string fileName in existFileList)
-            {
-                tmpDat              = new DataSet();
-                tmpDat.m_fileName   = fileName;
-                tmpDat.m_summary    = "";
-                tmpDat.m_isExist    = true;
-                try
-                {
-                    m_dataMaster[type].Add(fileName,tmpDat);
-                }
-                catch
-                {
+		//-----------------------------------------------------------------------------------------------
+		//ディクショナリーにファイル情報を足しつつ、既存であればファイルの存在を確認したということでフラグ立て
+		//-----------------------------------------------------------------------------------------------
+		public void AddDictionary( List<string> existFileList, int type )
+		{
+			DataSet tmpDat;
+			foreach (string fileName in existFileList)
+			{
+				tmpDat			  = new DataSet();
+				tmpDat.m_fileName   = fileName;
+				tmpDat.m_summary	= "";
+				tmpDat.m_isExist	= true;
+				try
+				{
+					m_dataMaster[type].Add(fileName,tmpDat);
+				}
+				catch
+				{
 					m_dataMaster[type][fileName].m_isExist = true;
-                }
-            }
-        }
+				}
+			}
+		}
 
 		//-----------------------------------------------------------------------------------------------
 		//ディクショナリーにファイル情報を足しつつ、既存であればファイルの存在を確認したということでフラグ立て

@@ -57,23 +57,23 @@ namespace SEViewer
 			
 			m_soundPlayer = new soundPlayer(this);
 
-            System.Math.Max(10, System.Math.Min(5, 8));
+			System.Math.Max(10, System.Math.Min(5, 8));
 
 			//----------------------------------------------------------------
 			m_exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			m_exePath = MainFunction.Add_EndPathSeparator(m_exePath);
 
-            tabCategorySE.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[0]);
-            tabCategoryBGM.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[1]);
-            tabCategoryBGV.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[2]);
-            tabCategoryUSEFULL.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[3]);
+			tabCategorySE.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[0]);
+			tabCategoryBGM.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[1]);
+			tabCategoryBGV.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[2]);
+			tabCategoryUSEFULL.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[3]);
 			tabCategoryFAV.Text = System.IO.Path.GetFileNameWithoutExtension(Program.m_data.txtPath[4]);
 
 			//----------------------------------------------------------------
 
 			string[]		   m_fileListTmpGet;
 
-            for (int i = 0; i < DataSetManager.MAX_CATEGORY; i++)
+			for (int i = 0; i < DataSetManager.MAX_CATEGORY; i++)
 			{
 				//まずはフォルダ内のwavファイルを全て列挙
 				m_fileListTmpGet = SEViewer.MainFunction.Get_PathFromDirectroy(Program.m_data.soundPath[i], "*.wav", true);
@@ -102,10 +102,10 @@ namespace SEViewer
 			}
 			//----------------------------------------------------------------
 
-            UpdateGenreComboBox(0);
-            UpdateGenreComboBox2(0);
+			UpdateGenreComboBox(0);
+			UpdateGenreComboBox2(0);
 
-            comboBox4.SelectedIndex = 0;
+			comboBox4.SelectedIndex = 0;
 			NewCreateFileList();
 
 			UpdateList("");
@@ -133,32 +133,32 @@ namespace SEViewer
 		}
 
 
-        public void UpdateGenreComboBox(int id)
-        {
-            //ジャンルボックス初期化
-            comboBox3.Items.Clear();
-            comboBox3.Items.Add("ジャンル指定なし");
+		public void UpdateGenreComboBox(int id)
+		{
+			//ジャンルボックス初期化
+			comboBox3.Items.Clear();
+			comboBox3.Items.Add("ジャンル指定なし");
 
-            foreach (string genre in Program.m_data.m_genreList[id])
-                comboBox3.Items.Add(genre);
+			foreach (string genre in Program.m_data.m_genreList[id])
+				comboBox3.Items.Add(genre);
 
-            comboBox3.SelectedIndex = 0;
-        }
+			comboBox3.SelectedIndex = 0;
+		}
 
-        public void UpdateGenreComboBox2(int id, bool isDrawin = false)
-        {
-            //ジャンルボックス初期化;
+		public void UpdateGenreComboBox2(int id, bool isDrawin = false)
+		{
+			//ジャンルボックス初期化;
 
-            comboBox5.Items.Clear();
-            comboBox5.Items.Add("ジャンル指定なし");
+			comboBox5.Items.Clear();
+			comboBox5.Items.Add("ジャンル指定なし");
 
-            string drawinStr;
-            string genre2Str;
-            string checkStr = comboBox3.SelectedItem.ToString();
+			string drawinStr;
+			string genre2Str;
+			string checkStr = comboBox3.SelectedItem.ToString();
 
-            if(checkStr == "ジャンル指定なし") isDrawin =false;
+			if(checkStr == "ジャンル指定なし") isDrawin =false;
 
-            if( m_soundModeType != 4 )
+			if( m_soundModeType != 4 )
 			{
 				foreach (string genre in Program.m_data.m_genreList2[id])
 				{
@@ -178,29 +178,29 @@ namespace SEViewer
 				}
 			}
 
-            
-            comboBox5.SelectedIndex = 0;
-        }
-        //-----------------------------------------------------------------------------------------------
-        //実オーディオファイルリストから絞り込む
-        //-----------------------------------------------------------------------------------------------
-        public void UpdateList(string regPattern)
+			
+			comboBox5.SelectedIndex = 0;
+		}
+		//-----------------------------------------------------------------------------------------------
+		//実オーディオファイルリストから絞り込む
+		//-----------------------------------------------------------------------------------------------
+		public void UpdateList(string regPattern)
 		{
 			m_showFileList.Clear();
-            bool genreCheck = false;
+			bool genreCheck = false;
 
 			Regex regGeter = new Regex(regPattern, RegexOptions.IgnoreCase);
 
 			foreach (string tmpFilePath in m_fileList)
 			{
-                genreCheck = CheckGenreCrossFit(Program.m_data.GetGenre(tmpFilePath, m_soundModeType), Program.m_data.GetGenre2(tmpFilePath, m_soundModeType),comboBox3.SelectedItem.ToString(), comboBox5.SelectedItem.ToString());
+				genreCheck = CheckGenreCrossFit(Program.m_data.GetGenre(tmpFilePath, m_soundModeType), Program.m_data.GetGenre2(tmpFilePath, m_soundModeType),comboBox3.SelectedItem.ToString(), comboBox5.SelectedItem.ToString());
 
-                if ( (regPattern == "" || 
+				if ( (regPattern == "" || 
 					( comboBox4.SelectedIndex == 0 && regGeter.IsMatch(Program.m_data.GetSummary(tmpFilePath, m_soundModeType))  )||
 					( comboBox4.SelectedIndex == 1 && regGeter.IsMatch(tmpFilePath)
-                    ))
-                    && genreCheck
-                )
+					))
+					&& genreCheck
+				)
 				{
 					m_showFileList.Add(tmpFilePath);
 				}
@@ -209,19 +209,19 @@ namespace SEViewer
 		}
 
 
-        bool CheckGenreCrossFit( string check1, string check2, string selectGenre1, string selectGenre2)
-        {
-            //ジャンル1の絞込
-            if (selectGenre1 == "ジャンル指定なし" && selectGenre2 == "ジャンル指定なし") return true;
+		bool CheckGenreCrossFit( string check1, string check2, string selectGenre1, string selectGenre2)
+		{
+			//ジャンル1の絞込
+			if (selectGenre1 == "ジャンル指定なし" && selectGenre2 == "ジャンル指定なし") return true;
 
-            if(selectGenre1 == "ジャンル指定なし" && (check2 == selectGenre1 || check2 == selectGenre2)) return true;
-            if(selectGenre2 == "ジャンル指定なし" && (check1 == selectGenre1 || check1 == selectGenre2)) return true;
-            if(check1 == selectGenre1 && check2 == selectGenre2)return true;
-            if(check2 == selectGenre1 && check1 == selectGenre2)return true;
+			if(selectGenre1 == "ジャンル指定なし" && (check2 == selectGenre1 || check2 == selectGenre2)) return true;
+			if(selectGenre2 == "ジャンル指定なし" && (check1 == selectGenre1 || check1 == selectGenre2)) return true;
+			if(check1 == selectGenre1 && check2 == selectGenre2)return true;
+			if(check2 == selectGenre1 && check1 == selectGenre2)return true;
 
-            return false;
+			return false;
 
-        }
+		}
 		//-----------------------------------------------------------------------------------------------
 		//
 		//-----------------------------------------------------------------------------------------------
@@ -289,8 +289,8 @@ namespace SEViewer
 					tmpItem.ForeColor = Color.Black;
 				}
 				tmpItem.SubItems.Add(Program.m_data.GetGenre(  filePath,m_soundModeType));
-                tmpItem.SubItems.Add(Program.m_data.GetGenre2(filePath, m_soundModeType));
-                tmpItem.SubItems.Add(Program.m_data.GetSummary(filePath,m_soundModeType));
+				tmpItem.SubItems.Add(Program.m_data.GetGenre2(filePath, m_soundModeType));
+				tmpItem.SubItems.Add(Program.m_data.GetSummary(filePath,m_soundModeType));
 
 				string fileName = Program.m_data.soundPath[m_soundModeType] + filePath;
 				string playLength = Program.m_data.GetPlayLength(filePath, m_soundModeType);
@@ -304,8 +304,6 @@ namespace SEViewer
 
 
 				tmpItem.SubItems.Add(playLength+" 秒");
-
-
 
 			}
 			int id = copyStrSelect.SelectedIndex-1;
@@ -339,7 +337,7 @@ namespace SEViewer
 			int i = 0;
 
 			foreach (string genre in Program.m_data.m_genreList[soundCategory]){
-                tmpNode = topNode.Nodes.Add(genre);
+				tmpNode = topNode.Nodes.Add(genre);
 
 				if( Program.m_data.m_genreColorList[soundCategory][i] != Color.Black ){
 					tmpNode.ForeColor = Program.m_data.m_genreColorList[soundCategory][i];
@@ -361,7 +359,7 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		public void SaveSet()
 		{
-            string m_exePath = System.IO.Directory.GetCurrentDirectory();
+			string m_exePath = System.IO.Directory.GetCurrentDirectory();
 			m_exePath = MainFunction.Add_EndPathSeparator(m_exePath);
 			Program.m_data.settingSave(m_exePath + "option.txt" );
 			Program.m_data.SaveFavList();
@@ -392,13 +390,13 @@ namespace SEViewer
 			//右クリックならばクリップボードにコピー
 			if (e.Button == System.Windows.Forms.MouseButtons.Right)
 			{
-                //コントロール ctrl+クリックでファイル名のみ取得
-                if ((Control.ModifierKeys & Keys.Control) == Keys.Control || e.Button == MouseButtons.Middle)
-                {
-                    if (copyFileName != "") System.Windows.Forms.Clipboard.SetText(copyFileName);
-                }else{
-                    copyStringToClipboard(copyFileName);
-                }
+				//コントロール ctrl+クリックでファイル名のみ取得
+				if ((Control.ModifierKeys & Keys.Control) == Keys.Control || e.Button == MouseButtons.Middle)
+				{
+					if (copyFileName != "") System.Windows.Forms.Clipboard.SetText(copyFileName);
+				}else{
+					copyStringToClipboard(copyFileName);
+				}
 			}
 		}
 
@@ -435,6 +433,8 @@ namespace SEViewer
 			bool isLoop = checkBox9.Checked;
 
 			//左ダブルクリックなので再生
+
+			if( listView1.SelectedItems.Count == 0 ) return;
 
 			string fileFullPath = Program.m_data.soundPath[m_soundModeType] + listView1.SelectedItems[0].Text;
 
@@ -482,15 +482,15 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
-            Program.m_data.m_left       = this.Left;
-            Program.m_data.m_top        = this.Top;
-            Program.m_data.m_width      = this.Width;
-            Program.m_data.m_height     = this.Height;
+			Program.m_data.m_left	   = this.Left;
+			Program.m_data.m_top		= this.Top;
+			Program.m_data.m_width	  = this.Width;
+			Program.m_data.m_height	 = this.Height;
 
-            Program.m_data.m_col1Size = listView1.Columns[0].Width;
-            Program.m_data.m_col2Size = listView1.Columns[1].Width;
-            Program.m_data.m_col3Size = listView1.Columns[2].Width;
-            Program.m_data.m_col4Size = listView1.Columns[3].Width;
+			Program.m_data.m_col1Size = listView1.Columns[0].Width;
+			Program.m_data.m_col2Size = listView1.Columns[1].Width;
+			Program.m_data.m_col3Size = listView1.Columns[2].Width;
+			Program.m_data.m_col4Size = listView1.Columns[3].Width;
 
 			Program.m_data.m_toolOption[0] = (menuItemCheck1.Checked?1:0);
 			Program.m_data.m_toolOption[1] = (menuItemCheck2.Checked?1:0);
@@ -520,23 +520,23 @@ namespace SEViewer
 			Program.m_data.copyStr[id] = textCopyStr.Text;
 		}
 		
-        //-----------------------------------------------------------------------------------------------
-        //フォームロードイベント
-        //-----------------------------------------------------------------------------------------------
-        private void Form1_Load(object sender, EventArgs e)
+		//-----------------------------------------------------------------------------------------------
+		//フォームロードイベント
+		//-----------------------------------------------------------------------------------------------
+		private void Form1_Load(object sender, EventArgs e)
 		{
 			// WaveOutの状態を気にしつつ、データを出力するためのタイマー
 			timer1.Interval = 10;
 
-            this.Left	= Program.m_data.m_left;
-            this.Top	= Program.m_data.m_top;
-            this.Width	= Program.m_data.m_width;
-            this.Height = Program.m_data.m_height;
+			this.Left	= Program.m_data.m_left;
+			this.Top	= Program.m_data.m_top;
+			this.Width	= Program.m_data.m_width;
+			this.Height = Program.m_data.m_height;
 
-            listView1.Columns[0].Width = Program.m_data.m_col1Size;
-            listView1.Columns[1].Width = Program.m_data.m_col2Size;
-            listView1.Columns[2].Width = Program.m_data.m_col3Size;
-            listView1.Columns[3].Width = Program.m_data.m_col4Size;
+			listView1.Columns[0].Width = Program.m_data.m_col1Size;
+			listView1.Columns[1].Width = Program.m_data.m_col2Size;
+			listView1.Columns[2].Width = Program.m_data.m_col3Size;
+			listView1.Columns[3].Width = Program.m_data.m_col4Size;
 			
 			splitContainer1.SplitterDistance = Program.m_data.m_splitSize;
 
@@ -544,7 +544,7 @@ namespace SEViewer
 			menuItemCheck2.Checked =	(Program.m_data.m_toolOption[1] == 1 ? true : false );
 			menuItemCheck3.Checked =	(Program.m_data.m_toolOption[2] == 1 ? true : false );
 			menuItemCheck4.Checked =	(Program.m_data.m_toolOption[3] == 1 ? true : false );
-        }
+		}
 
 		//-----------------------------------------------------------------------------------------------
 		//
@@ -567,10 +567,15 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		private void timer1_Tick(object sender, EventArgs e)
 		{
-			int now = m_soundPlayer.GetNowPlayPercent()*10;
+			int now = m_soundPlayer.GetNowPlayPercent()*100;
 			if (now == -1) now = 0;
-			progressBar1.Value = 1000;
+			progressBar1.Maximum = progressBar1.Maximum+1;
+			progressBar1.Value = progressBar1.Maximum;
+			progressBar1.Value = now+1;
 			progressBar1.Value = now;
+			progressBar1.Maximum = progressBar1.Maximum -1;
+
+			if( progressBar1.Value == progressBar1.Maximum ) timer1.Stop();
 
 			tbPlayTime.Text = LeftSub(m_soundPlayer.GetNowPosition().ToString(), 5) + " 秒";
 
@@ -597,8 +602,8 @@ namespace SEViewer
 				
 			}
 
-            if(e.KeyCode == Keys.F3 && m_soundModeType != 4 )
-            {
+			if(e.KeyCode == Keys.F3 && m_soundModeType != 4 )
+			{
 				//リスト4にいま選択中の音を放り込む
 				if (listView1.SelectedItems.Count != 0)
 				{
@@ -610,7 +615,7 @@ namespace SEViewer
 			}
 
 			 if(e.KeyCode == Keys.F4 && m_soundModeType == 4 )
-            {
+			{
 				//リスト4にいま選択中の音を放り込む
 				if (listView1.SelectedItems.Count != 0)
 				{
@@ -653,8 +658,8 @@ namespace SEViewer
 		private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			UpdateList(m_searchStr);
-            UpdateGenreComboBox2(m_soundModeType,true);
-            SetListViewItem();
+			UpdateGenreComboBox2(m_soundModeType,true);
+			SetListViewItem();
 		}
 
 
@@ -708,7 +713,18 @@ namespace SEViewer
 
 		private void SoundStopTextCopyStringToClipboard( bool isBgm)
 		{
-			string copyFileName =  ( isBgm ? Program.m_data.generalCopyStrBGM : Program.m_data.generalCopyStrSE );
+			string copyFileName =  ( isBgm ? Program.m_data.copyStrBGM : Program.m_data.copyStrSE );
+
+			copyFileName = copyFileName.Replace("%n", System.Environment.NewLine);
+
+			copyFileName = copyFileName.Replace("%t", "	");
+
+			if (copyFileName != "") System.Windows.Forms.Clipboard.SetText(copyFileName);
+		}
+
+		private void TabStrTextCopyStringToClipboard( int id )
+		{
+			string copyFileName = Program.m_data.copyStrByTab[id];
 
 			copyFileName = copyFileName.Replace("%n", System.Environment.NewLine);
 
@@ -742,11 +758,11 @@ namespace SEViewer
 			if (tmp.Checked == true) ChangeSoundTab( 2 );
 		}
 
-        private void checkBox6_CheckedChanged(object sender, EventArgs e)
-        {
-            System.Windows.Forms.CheckBox tmp = (System.Windows.Forms.CheckBox)sender;
-            if (tmp.Checked == true) ChangeSoundTab( 3 );
-        }
+		private void checkBox6_CheckedChanged(object sender, EventArgs e)
+		{
+			System.Windows.Forms.CheckBox tmp = (System.Windows.Forms.CheckBox)sender;
+			if (tmp.Checked == true) ChangeSoundTab( 3 );
+		}
 
 		private void checkBox8_CheckedChanged(object sender, EventArgs e)
 		{
@@ -760,13 +776,13 @@ namespace SEViewer
 			m_receiveEventFlg	= true;
 			m_soundModeType		= soundCategory;
 
-            UpdateGenreComboBox(soundCategory);
-            UpdateGenreComboBox2(soundCategory);
+			UpdateGenreComboBox(soundCategory);
+			UpdateGenreComboBox2(soundCategory);
 
 			tabCategorySE.CheckState		= ( soundCategory == 0 ? CheckState.Checked : CheckState.Unchecked );
-            tabCategoryBGM.CheckState		= ( soundCategory == 1 ? CheckState.Checked : CheckState.Unchecked );
+			tabCategoryBGM.CheckState		= ( soundCategory == 1 ? CheckState.Checked : CheckState.Unchecked );
 			tabCategoryBGV.CheckState		= ( soundCategory == 2 ? CheckState.Checked : CheckState.Unchecked );
-            tabCategoryUSEFULL.CheckState	= ( soundCategory == 3 ? CheckState.Checked : CheckState.Unchecked );
+			tabCategoryUSEFULL.CheckState	= ( soundCategory == 3 ? CheckState.Checked : CheckState.Unchecked );
 			tabCategoryFAV.CheckState		= ( soundCategory == 4 ? CheckState.Checked : CheckState.Unchecked );
 
 			NewCreateFileList();
@@ -789,57 +805,57 @@ namespace SEViewer
 			SetListViewItem();
 		}
 
-        private void label2_Click(object sender, EventArgs e)
-        {
+		private void label2_Click(object sender, EventArgs e)
+		{
 
-        }
+		}
 		
 
-        private void checkBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Middle)
-            {
-                string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                exePath = MainFunction.Add_EndPathSeparator(exePath);
-                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[0]);
-            }
-        }
+		private void checkBox2_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle)
+			{
+				string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				exePath = MainFunction.Add_EndPathSeparator(exePath);
+				System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[0]);
+			}
+		}
 
-        private void checkBox3_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Middle)
-            {
-                string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                exePath = MainFunction.Add_EndPathSeparator(exePath);
-                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[1]);
-            }
-        }
+		private void checkBox3_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle)
+			{
+				string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				exePath = MainFunction.Add_EndPathSeparator(exePath);
+				System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[1]);
+			}
+		}
 
-        private void checkBox4_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Middle)
-            {
-                string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                exePath = MainFunction.Add_EndPathSeparator(exePath);
-                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[2]);
-            }
-        }
+		private void checkBox4_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle)
+			{
+				string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				exePath = MainFunction.Add_EndPathSeparator(exePath);
+				System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[2]);
+			}
+		}
 
-        private void checkBox6_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Middle)
-            {
-                string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                exePath = MainFunction.Add_EndPathSeparator(exePath);
-                System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[3]);
-            }
-        }
+		private void checkBox6_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle)
+			{
+				string exePath = System.IO.Directory.GetCurrentDirectory();//System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				exePath = MainFunction.Add_EndPathSeparator(exePath);
+				System.Diagnostics.Process p = System.Diagnostics.Process.Start(exePath + SEViewer.Program.m_data.txtPath[3]);
+			}
+		}
 
-        private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateList(m_searchStr);
+		private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			UpdateList(m_searchStr);
 			SetListViewItem();
-        }
+		}
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
@@ -898,7 +914,7 @@ namespace SEViewer
 			else							comboBox3.SelectedIndex = e.Node.Index+1;
 			
 			//UpdateList( m_searchStr );
-            //SetListViewItem();
+			//SetListViewItem();
 
 		}
 
@@ -1009,6 +1025,11 @@ namespace SEViewer
 		private void button4_Click(object sender, EventArgs e)
 		{
 			SoundStopTextCopyStringToClipboard(false);
+		}
+
+		private void button5_Click(object sender, EventArgs e)
+		{
+			TabStrTextCopyStringToClipboard( m_soundModeType );
 		}
 
 		/*
