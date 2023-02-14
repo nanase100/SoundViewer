@@ -225,7 +225,7 @@ namespace SEViewer
 			m_col2Size = jsonData.音リストのカラム幅[1];
 			m_col3Size = jsonData.音リストのカラム幅[2];
 			m_col4Size = jsonData.音リストのカラム幅[3];
-
+			
 			//ツールオプションのon/off
 			for( int i = 0; i < jsonData.機能オプションONOFF.Count; i++ )
 			{
@@ -251,9 +251,9 @@ namespace SEViewer
 			//-----------------------------------------------------
 
 			DataSet tmpData;
-			Regex regGeter = new Regex("(.*),(.*)", RegexOptions.IgnoreCase);
-			Regex regGeter2 = new Regex("(.*),(.*),(.*)", RegexOptions.IgnoreCase);
-			Regex regIgnore = new Regex(@"//|^\n", RegexOptions.IgnoreCase);
+			Regex regGeter	= new Regex("(.*),(.*)", RegexOptions.IgnoreCase);
+			Regex regGeter2	= new Regex("(.*),(.*),(.*)", RegexOptions.IgnoreCase);
+			Regex regIgnore	= new Regex(@"//|^\n", RegexOptions.IgnoreCase);
 
 			Regex regGenre = new Regex("※(.*)");
 			Regex regGenreEx = new Regex("※(.*),#(..)(..)(..)");

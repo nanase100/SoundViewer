@@ -1020,16 +1020,19 @@ namespace SEViewer
 		private void button3_Click_1(object sender, EventArgs e)
 		{
 			SoundStopTextCopyStringToClipboard(true);
+			SendKey();
 		}
 
 		private void button4_Click(object sender, EventArgs e)
 		{
 			SoundStopTextCopyStringToClipboard(false);
+			SendKey();
 		}
 
 		private void button5_Click(object sender, EventArgs e)
 		{
 			TabStrTextCopyStringToClipboard( m_soundModeType );
+			SendKey();
 		}
 
 		/*

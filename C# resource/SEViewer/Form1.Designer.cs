@@ -125,7 +125,7 @@
 			this.listView1.FullRowSelect = true;
 			this.listView1.GridLines = true;
 			this.listView1.HideSelection = false;
-			this.listView1.Location = new System.Drawing.Point(18, 20);
+			this.listView1.Location = new System.Drawing.Point(3, 29);
 			this.listView1.MultiSelect = false;
 			this.listView1.Name = "listView1";
 			this.listView1.Size = new System.Drawing.Size(607, 603);
