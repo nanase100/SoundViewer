@@ -35,6 +35,8 @@ namespace SEViewer
 		private bool m_receiveEventFlg = false;
 
 		private ListViewItemComparer listViewItemSorter;
+
+		private bool m_waitPlayFlg = false;
 		
 
 		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
@@ -105,7 +107,6 @@ namespace SEViewer
 			UpdateGenreComboBox(0);
 			UpdateGenreComboBox2(0);
 
-			comboBox4.SelectedIndex = 0;
 			NewCreateFileList();
 
 			UpdateList("");
@@ -196,9 +197,9 @@ namespace SEViewer
 				genreCheck = CheckGenreCrossFit(Program.m_data.GetGenre(tmpFilePath, m_soundModeType), Program.m_data.GetGenre2(tmpFilePath, m_soundModeType),comboBox3.SelectedItem.ToString(), comboBox5.SelectedItem.ToString());
 
 				if ( (regPattern == "" || 
-					( comboBox4.SelectedIndex == 0 && regGeter.IsMatch(Program.m_data.GetSummary(tmpFilePath, m_soundModeType))  )||
-					( comboBox4.SelectedIndex == 1 && regGeter.IsMatch(tmpFilePath)
-					))
+					regGeter.IsMatch(Program.m_data.GetSummary(tmpFilePath, m_soundModeType))  ||
+					regGeter.IsMatch(tmpFilePath)
+					)
 					&& genreCheck
 				)
 				{
@@ -290,6 +291,7 @@ namespace SEViewer
 				}
 				tmpItem.SubItems.Add(Program.m_data.GetGenre(  filePath,m_soundModeType));
 				tmpItem.SubItems.Add(Program.m_data.GetGenre2(filePath, m_soundModeType));
+				tmpItem.SubItems.Add(Program.m_data.GetGenre3(filePath, m_soundModeType));
 				tmpItem.SubItems.Add(Program.m_data.GetSummary(filePath,m_soundModeType));
 
 				string fileName = Program.m_data.soundPath[m_soundModeType] + filePath;
@@ -297,7 +299,7 @@ namespace SEViewer
 				//初回読み込み
 				if (playLength == "-1" && System.IO.File.Exists(fileName))
 				{
-					playLength = m_soundPlayer.GetLengthTmp(fileName).ToString();
+					playLength = m_soundPlayer.GetLengthSecondTmp(fileName).ToString();
 					Program.m_data.SetPlayLength(filePath, playLength, m_soundModeType);
 				}
 				if( playLength.IndexOf('.') != -1 ) playLength = playLength.Substring(0,playLength.IndexOf('.')+2);
@@ -359,6 +361,7 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		public void SaveSet()
 		{
+			Program.m_data.m_splitSize = splitContainer1.SplitterDistance;
 			string m_exePath = System.IO.Directory.GetCurrentDirectory();
 			m_exePath = MainFunction.Add_EndPathSeparator(m_exePath);
 			Program.m_data.settingSave(m_exePath + "option.txt" );
@@ -398,6 +401,8 @@ namespace SEViewer
 					copyStringToClipboard(copyFileName);
 				}
 			}
+
+
 		}
 
 		//-----------------------------------------------------------------------------------------------
@@ -405,6 +410,12 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			if( m_waitPlayFlg )
+			{
+				
+				PlaySelectSound();
+			}
+			/*
 			if (listView1.SelectedItems.Count == 0) return;
 
 			//タイトル更新
@@ -416,6 +427,7 @@ namespace SEViewer
 			{
 				PlaySelectSound();
 			}
+			*/
 		}
 
 		//-----------------------------------------------------------------------------------------------
@@ -454,11 +466,13 @@ namespace SEViewer
 				if (System.IO.File.Exists(fileFullPath) == false ) return;
 			}
 			
+			m_waitPlayFlg = false;
 
-			if (m_soundPlayer.PlaySound(fileFullPath, trackBar1.Value, isLoop, second))
+			//if (m_soundPlayer.PlaySound(fileFullPath, trackBar1.Value, isLoop, second))
+			if (m_soundPlayer.PlaySound(fileFullPath, 255, isLoop, second))
 			{
 				timer1.Start();
-				tbTotalTime.Text = LeftSub(m_soundPlayer.GetLength().ToString(), 5) + " 秒";
+				tbTotalTime.Text = LeftSub(m_soundPlayer.GetLengthSecond().ToString(), 5) + " 秒";
 			}
 		}
 
@@ -487,11 +501,37 @@ namespace SEViewer
 			Program.m_data.m_width	  = this.Width;
 			Program.m_data.m_height	 = this.Height;
 
-			Program.m_data.m_col1Size = listView1.Columns[0].Width;
-			Program.m_data.m_col2Size = listView1.Columns[1].Width;
-			Program.m_data.m_col3Size = listView1.Columns[2].Width;
-			Program.m_data.m_col4Size = listView1.Columns[3].Width;
+			/*
+			Program.m_data.m_colSizeList[0][0] = listView1.Columns[0].Width;
+			Program.m_data.m_colSizeList[0][1] = listView1.Columns[1].Width;
+			Program.m_data.m_colSizeList[0][2] = listView1.Columns[2].Width;
+			Program.m_data.m_colSizeList[0][3] = listView1.Columns[3].Width;
+			Program.m_data.m_colSizeList[0][4] = listView1.Columns[4].Width;
 
+			Program.m_data.m_colSizeList[1][0] = listView1.Columns[0].Width;
+			Program.m_data.m_colSizeList[1][1] = listView1.Columns[1].Width;
+			Program.m_data.m_colSizeList[1][2] = listView1.Columns[2].Width;
+			Program.m_data.m_colSizeList[1][3] = listView1.Columns[3].Width;
+			Program.m_data.m_colSizeList[1][4] = listView1.Columns[4].Width;
+
+			Program.m_data.m_colSizeList[2][0] = listView1.Columns[0].Width;
+			Program.m_data.m_colSizeList[2][1] = listView1.Columns[1].Width;
+			Program.m_data.m_colSizeList[2][2] = listView1.Columns[2].Width;
+			Program.m_data.m_colSizeList[2][3] = listView1.Columns[3].Width;
+			Program.m_data.m_colSizeList[2][4] = listView1.Columns[4].Width;
+
+			Program.m_data.m_colSizeList[3][0] = listView1.Columns[0].Width;
+			Program.m_data.m_colSizeList[3][1] = listView1.Columns[1].Width;
+			Program.m_data.m_colSizeList[3][2] = listView1.Columns[2].Width;
+			Program.m_data.m_colSizeList[3][3] = listView1.Columns[3].Width;
+			Program.m_data.m_colSizeList[3][4] = listView1.Columns[4].Width;
+
+			Program.m_data.m_colSizeList[4][0] = listView1.Columns[0].Width;
+			Program.m_data.m_colSizeList[4][1] = listView1.Columns[1].Width;
+			Program.m_data.m_colSizeList[4][2] = listView1.Columns[2].Width;
+			Program.m_data.m_colSizeList[4][3] = listView1.Columns[3].Width;
+			Program.m_data.m_colSizeList[4][4] = listView1.Columns[4].Width;
+			*/
 			Program.m_data.m_toolOption[0] = (menuItemCheck1.Checked?1:0);
 			Program.m_data.m_toolOption[1] = (menuItemCheck2.Checked?1:0);
 			Program.m_data.m_toolOption[2] = (menuItemCheck3.Checked?1:0);
@@ -533,10 +573,10 @@ namespace SEViewer
 			this.Width	= Program.m_data.m_width;
 			this.Height = Program.m_data.m_height;
 
-			listView1.Columns[0].Width = Program.m_data.m_col1Size;
-			listView1.Columns[1].Width = Program.m_data.m_col2Size;
-			listView1.Columns[2].Width = Program.m_data.m_col3Size;
-			listView1.Columns[3].Width = Program.m_data.m_col4Size;
+//			listView1.Columns[0].Width = Program.m_data.m_col1Size;
+//			listView1.Columns[1].Width = Program.m_data.m_col2Size;
+//			listView1.Columns[2].Width = Program.m_data.m_col3Size;
+//			listView1.Columns[3].Width = Program.m_data.m_col4Size;
 			
 			splitContainer1.SplitterDistance = Program.m_data.m_splitSize;
 
@@ -567,7 +607,7 @@ namespace SEViewer
 		//-----------------------------------------------------------------------------------------------
 		private void timer1_Tick(object sender, EventArgs e)
 		{
-			int now = m_soundPlayer.GetNowPlayPercent()*100;
+			int now = m_soundPlayer.GetNowPlayPercent(-1,100)*100;
 			if (now == -1) now = 0;
 			progressBar1.Maximum = progressBar1.Maximum+1;
 			progressBar1.Value = progressBar1.Maximum;
@@ -625,9 +665,9 @@ namespace SEViewer
 				}else{
 					System.Windows.Forms.MessageBox.Show("削除するお気に入り音を選んでください");
 				}
-
-
 			}
+
+
 		}
 
 
@@ -697,7 +737,12 @@ namespace SEViewer
 			
 			copyFileName = copyFileName.Replace("%n", System.Environment.NewLine);
 
-			copyFileName = copyFileName.Replace("%i", listView1.SelectedItems[0].SubItems[3].Text);
+			copyFileName = copyFileName.Replace("%h", listView1.SelectedItems[0].SubItems[2].Text);
+
+			copyFileName = copyFileName.Replace("%i", listView1.SelectedItems[0].SubItems[4].Text);
+
+			copyFileName = copyFileName.Replace("%j", listView1.SelectedItems[0].SubItems[3].Text);
+
 
 			if (listView1.SelectedItems.Count != 0)
 			{
@@ -773,8 +818,20 @@ namespace SEViewer
 
 		private void ChangeSoundTab( int soundCategory )
 		{
-			m_receiveEventFlg	= true;
+			listView1.BeginUpdate();
+			m_receiveEventFlg = true;
+
+			listView1.Columns[0].Width = Program.m_data.m_colSizeList[soundCategory][0];
+			listView1.Columns[1].Width = Program.m_data.m_colSizeList[soundCategory][1];
+			listView1.Columns[2].Width = Program.m_data.m_colSizeList[soundCategory][2];
+			listView1.Columns[3].Width = Program.m_data.m_colSizeList[soundCategory][3];
+			listView1.Columns[4].Width = Program.m_data.m_colSizeList[soundCategory][4];
+
+			listView1.EndUpdate();
+
 			m_soundModeType		= soundCategory;
+
+
 
 			UpdateGenreComboBox(soundCategory);
 			UpdateGenreComboBox2(soundCategory);
@@ -859,7 +916,7 @@ namespace SEViewer
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
-			m_soundPlayer.SetVolume( trackBar1.Value );
+			//m_soundPlayer.SetVolume( trackBar1.Value );
 		}
 
 
@@ -937,7 +994,7 @@ namespace SEViewer
 
 		private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			Program.m_data.m_splitSize = splitContainer1.SplitterDistance;
+//			Program.m_data.m_splitSize = splitContainer1.SplitterDistance;
 
 			if( this.Width > 930 ){
 				tabCategorySE.Left = Program.m_data.m_splitSize + 16;
@@ -983,14 +1040,14 @@ namespace SEViewer
 		private void progressBar1_Click(object sender, EventArgs e)
 		{
 			double per = (double)((System.Windows.Forms.MouseEventArgs)e).X / (double)progressBar1.Width;
-			double second = m_soundPlayer.GetLength() * per;
+			double second = m_soundPlayer.GetLengthSecond() * per;
 			PlaySelectSound(second);
 		}
 
 		private void progressBar1_MouseMove(object sender, MouseEventArgs e)
 		{
 			double per = (double)((System.Windows.Forms.MouseEventArgs)e).X / (double)progressBar1.Width;
-			double second = m_soundPlayer.GetLength() * per;
+			double second = m_soundPlayer.GetLengthSecond() * per;
 			
 			toolTip1.ToolTipTitle = "";
 		
@@ -1034,6 +1091,34 @@ namespace SEViewer
 			TabStrTextCopyStringToClipboard( m_soundModeType );
 			SendKey();
 		}
+
+		private void listView1_MouseDown(object sender, MouseEventArgs e)
+		{
+			if( e.Button == System.Windows.Forms.MouseButtons.Middle )
+			{
+				StopSound();
+			}
+
+
+			
+			if(e.Button == System.Windows.Forms.MouseButtons.Left && menuItemCheck4.Checked )
+			{
+				//PlaySelectSound();
+				m_waitPlayFlg = true;
+			}
+		}
+
+		private void listView1_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e)
+		{
+			if( m_receiveEventFlg ) return;
+
+			Program.m_data.m_colSizeList[m_soundModeType][0] = listView1.Columns[0].Width;
+			Program.m_data.m_colSizeList[m_soundModeType][1] = listView1.Columns[1].Width;
+			Program.m_data.m_colSizeList[m_soundModeType][2] = listView1.Columns[2].Width;
+			Program.m_data.m_colSizeList[m_soundModeType][3] = listView1.Columns[3].Width;
+			Program.m_data.m_colSizeList[m_soundModeType][4] = listView1.Columns[4].Width;
+		}
+
 
 		/*
 private void sendKey()
@@ -1102,8 +1187,8 @@ sendKey();
 
 
 
-	// プロセス名でソート ... for Array.Sort
-	public class ProcComparator : IComparer<Process>
+    // プロセス名でソート ... for Array.Sort
+    public class ProcComparator : IComparer<Process>
 	{
 		public int Compare(Process p, Process q)
 		{

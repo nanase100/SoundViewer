@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using System.Diagnostics.Eventing.Reader;
 
 namespace SEViewer
 {
@@ -16,15 +17,22 @@ namespace SEViewer
 		public string m_fileName	{ get; set; }
 		public string m_summary	 { get; set; }
 		public bool m_isExist	   { get; set; }
-		public string m_genre1	  { get; set; }
-		public string m_genre2	  { get; set; }
+		public string m_genre1	  { get; set; } = "";
+		public string m_genre2	  { get; set; } = "";
+		public string m_genre3	  { get; set; } = "";
 		public string playLength	{ get; set; } = "-1";
 	};
 
 
 	public class readJsonType1  {
 		public List<int>	ウインドウ座標					{ get; set; } = new List<int>();
+		
 		public List<int>	音リストのカラム幅				{ get; set; } = new List<int>();
+		public List<int>	音リストのカラム幅2				{ get; set; } = new List<int>();
+		public List<int>	音リストのカラム幅3				{ get; set; } = new List<int>();
+		public List<int>	音リストのカラム幅4				{ get; set; } = new List<int>();
+		public List<int>	音リストのカラム幅5				{ get; set; } = new List<int>();
+
 		public int			画面分割幅						{ get; set; }
 		public List<string>	音ファイルのパス				{ get; set; } = new List<string>();
 		public List<string>	音リストテキストのパス			{ get; set; } = new List<string>();
@@ -55,10 +63,10 @@ namespace SEViewer
 		public int m_top		{ set; get; }
 		public int m_width		{ set; get; }
 		public int m_height		{ set; get; }
-		public int m_col1Size	{ set; get; }
-		public int m_col2Size	{ set; get; }
-		public int m_col3Size	{ set; get; }
-		public int m_col4Size	{ set; get; }
+
+		public List<List<int>>	m_colSizeList = new List<List<int>>();
+
+
 
 		public int m_splitSize			 { set; get; }
 
@@ -79,6 +87,7 @@ namespace SEViewer
 
 		public HashSet<string>[] m_genreList { get; set; }
 		public HashSet<string>[] m_genreList2 { get; set; }
+		public HashSet<string>[] m_genreList3 { get; set; }
 		public List<Color>[]		m_genreColorList { get; set; }
 
 		public Dictionary<string, DataSet>  GetDataSet(int type)
@@ -94,6 +103,7 @@ namespace SEViewer
 			m_dataMaster		= new Dictionary<string, DataSet>[MAX_CATEGORY];
 			m_genreList			= new HashSet<string>[MAX_CATEGORY];
 			m_genreList2		= new HashSet<string>[MAX_CATEGORY];
+			m_genreList3		= new HashSet<string>[MAX_CATEGORY];
 			m_genreColorList	= new List<Color>[MAX_CATEGORY];
 			
 
@@ -156,6 +166,13 @@ namespace SEViewer
 			return m_dataMaster[type][keyFileName].m_genre2;
 		}
 
+		public string GetGenre3(string keyFileName, int type)
+		{
+			if (m_dataMaster[type].ContainsKey(keyFileName) == false) return "";
+
+			return m_dataMaster[type][keyFileName].m_genre3;
+		}
+
 
 		//-----------------------------------------------------------------------------------------------
 		//ディクショナリアクセサ
@@ -208,10 +225,40 @@ namespace SEViewer
 			m_width = 780;
 			m_height = 480;
 
-			m_col1Size = 200;
-			m_col2Size = 80;
-			m_col3Size = 80;
-			m_col4Size = 400;
+			m_colSizeList.Add(new List<int>());
+			m_colSizeList[0].Add(200);
+			m_colSizeList[0].Add(80);
+			m_colSizeList[0].Add(80);
+			m_colSizeList[0].Add(80);
+			m_colSizeList[0].Add(400);
+
+			m_colSizeList.Add(new List<int>());
+			m_colSizeList[1].Add(200);
+			m_colSizeList[1].Add(80);
+			m_colSizeList[1].Add(80);
+			m_colSizeList[1].Add(80);
+			m_colSizeList[1].Add(400);
+
+			m_colSizeList.Add(new List<int>());
+			m_colSizeList[2].Add(200);
+			m_colSizeList[2].Add(80);
+			m_colSizeList[2].Add(80);
+			m_colSizeList[2].Add(80);
+			m_colSizeList[2].Add(400);
+
+			m_colSizeList.Add(new List<int>());
+			m_colSizeList[3].Add(200);
+			m_colSizeList[3].Add(80);
+			m_colSizeList[3].Add(80);
+			m_colSizeList[3].Add(80);
+			m_colSizeList[3].Add(400);
+
+			m_colSizeList.Add(new List<int>());
+			m_colSizeList[4].Add(200);
+			m_colSizeList[4].Add(80);
+			m_colSizeList[4].Add(80);
+			m_colSizeList[4].Add(80);
+			m_colSizeList[4].Add(400);
 
 			m_splitSize = jsonData.画面分割幅;
 
@@ -221,10 +268,35 @@ namespace SEViewer
 			m_width = jsonData.ウインドウ座標[2];
 			m_height= jsonData.ウインドウ座標[3];
 
-			m_col1Size = jsonData.音リストのカラム幅[0];
-			m_col2Size = jsonData.音リストのカラム幅[1];
-			m_col3Size = jsonData.音リストのカラム幅[2];
-			m_col4Size = jsonData.音リストのカラム幅[3];
+			m_colSizeList[0][0] = jsonData.音リストのカラム幅[0];
+			m_colSizeList[0][1] = jsonData.音リストのカラム幅[1];
+			m_colSizeList[0][2] = jsonData.音リストのカラム幅[2];
+			m_colSizeList[0][3] = jsonData.音リストのカラム幅[3];
+			m_colSizeList[0][4] = jsonData.音リストのカラム幅[4];
+
+			m_colSizeList[1][0] = jsonData.音リストのカラム幅2[0];
+			m_colSizeList[1][1] = jsonData.音リストのカラム幅2[1];
+			m_colSizeList[1][2] = jsonData.音リストのカラム幅2[2];
+			m_colSizeList[1][3] = jsonData.音リストのカラム幅2[3];
+			m_colSizeList[1][4] = jsonData.音リストのカラム幅2[4];
+
+			m_colSizeList[2][0] = jsonData.音リストのカラム幅3[0];
+			m_colSizeList[2][1] = jsonData.音リストのカラム幅3[1];
+			m_colSizeList[2][2] = jsonData.音リストのカラム幅3[2];
+			m_colSizeList[2][3] = jsonData.音リストのカラム幅3[3];
+			m_colSizeList[2][4] = jsonData.音リストのカラム幅3[4];
+
+			m_colSizeList[3][0] = jsonData.音リストのカラム幅4[0];
+			m_colSizeList[3][1] = jsonData.音リストのカラム幅4[1];
+			m_colSizeList[3][2] = jsonData.音リストのカラム幅4[2];
+			m_colSizeList[3][3] = jsonData.音リストのカラム幅4[3];
+			m_colSizeList[3][4] = jsonData.音リストのカラム幅4[4];
+
+			m_colSizeList[4][0] = jsonData.音リストのカラム幅5[0];
+			m_colSizeList[4][1] = jsonData.音リストのカラム幅5[1];
+			m_colSizeList[4][2] = jsonData.音リストのカラム幅5[2];
+			m_colSizeList[4][3] = jsonData.音リストのカラム幅5[3];
+			m_colSizeList[4][4] = jsonData.音リストのカラム幅5[4];
 			
 			//ツールオプションのon/off
 			for( int i = 0; i < jsonData.機能オプションONOFF.Count; i++ )
@@ -251,8 +323,9 @@ namespace SEViewer
 			//-----------------------------------------------------
 
 			DataSet tmpData;
-			Regex regGeter	= new Regex("(.*),(.*)", RegexOptions.IgnoreCase);
-			Regex regGeter2	= new Regex("(.*),(.*),(.*)", RegexOptions.IgnoreCase);
+			Regex regGeter	= new Regex("(.*),(.*)", RegexOptions.IgnoreCase);		//音名と説明だけ
+			Regex regGeter2	= new Regex("(.*),(.*),(.*)", RegexOptions.IgnoreCase); //ファイル名と説明とジャンル名
+			Regex regGeter3	= new Regex("(.*),(.*),(.*),(.*)", RegexOptions.IgnoreCase); //ファイル名と説明とジャンル2名とジャンル3名
 			Regex regIgnore	= new Regex(@"//|^\n", RegexOptions.IgnoreCase);
 
 			Regex regGenre = new Regex("※(.*)");
@@ -260,6 +333,7 @@ namespace SEViewer
 
 			string nowGenre = "未定ジャンル";
 			string uniGenre = "";
+			string thirdGenre = "";
 
 			Match matcIgnoreResult = null;
 			Match matchStringSplit = null;
@@ -314,6 +388,7 @@ namespace SEViewer
 					if (matcIgnoreResult.Success == true) continue;
 
 					uniGenre = "";
+					thirdGenre = "";
 
 					//まずジャンル色付きを読み込むか判別
 					matchStringSplit = regGenreEx.Match(stBuffer);
@@ -335,24 +410,38 @@ namespace SEViewer
 							m_genreList[i].Add(nowGenre);
 							m_genreColorList[i].Add( Color.Black );
 						}else{
-							matchStringSplit = regGeter2.Match(stBuffer);
-							if (matchStringSplit.Success == false)
+							matchStringSplit = regGeter3.Match(stBuffer);
+							if (matchStringSplit.Success == true)
 							{
-								matchStringSplit = regGeter.Match(stBuffer);
-								if (matchStringSplit.Success == false)
-									continue;
-								else
-									uniGenre = "";
-							}else{
+								thirdGenre = matchStringSplit.Groups[4].ToString();
+
 								uniGenre = matchStringSplit.Groups[3].ToString();
 								m_genreList2[i].Add(nowGenre +"∴"+ uniGenre);
 							}
-							   
+							else {
+
+								matchStringSplit = regGeter2.Match(stBuffer);
+								if (matchStringSplit.Success == false)
+								{
+									matchStringSplit = regGeter.Match(stBuffer);
+									if (matchStringSplit.Success == false)
+										continue;
+									else
+										uniGenre = "";
+								}else{
+									uniGenre = matchStringSplit.Groups[3].ToString();
+									m_genreList2[i].Add(nowGenre +"∴"+ uniGenre);
+								}
+							}
+
+				
+
 							tmpData				= new DataSet();
 							tmpData.m_fileName  = matchStringSplit.Groups[1].ToString();
 							tmpData.m_summary   = matchStringSplit.Groups[2].ToString();
 							tmpData.m_genre1	= nowGenre;
 							tmpData.m_genre2	= uniGenre;
+							tmpData.m_genre3 = thirdGenre;
 							tmpData.m_isExist   = false;
 
 							m_dataMaster[i][tmpData.m_fileName] = tmpData;
@@ -396,15 +485,40 @@ namespace SEViewer
 			jsonData.ウインドウ座標[2] = m_width;
 			jsonData.ウインドウ座標[3] = m_height;
 
-			jsonData.音リストのカラム幅[0] =  m_col1Size;
-			jsonData.音リストのカラム幅[1] =  m_col2Size;
-			jsonData.音リストのカラム幅[2] =  m_col3Size;
-			jsonData.音リストのカラム幅[3] =  m_col4Size;
+			jsonData.音リストのカラム幅[0] =  m_colSizeList[0][0];
+			jsonData.音リストのカラム幅[1] =  m_colSizeList[0][1];
+			jsonData.音リストのカラム幅[2] =  m_colSizeList[0][2];
+			jsonData.音リストのカラム幅[3] =  m_colSizeList[0][3];
+			jsonData.音リストのカラム幅[4] =  m_colSizeList[0][4];
+
+			jsonData.音リストのカラム幅2[0] =  m_colSizeList[1][0];
+			jsonData.音リストのカラム幅2[1] =  m_colSizeList[1][1];
+			jsonData.音リストのカラム幅2[2] =  m_colSizeList[1][2];
+			jsonData.音リストのカラム幅2[3] =  m_colSizeList[1][3];
+			jsonData.音リストのカラム幅2[4] =  m_colSizeList[1][4];
+
+			jsonData.音リストのカラム幅3[0] =  m_colSizeList[2][0];
+			jsonData.音リストのカラム幅3[1] =  m_colSizeList[2][1];
+			jsonData.音リストのカラム幅3[2] =  m_colSizeList[2][2];
+			jsonData.音リストのカラム幅3[3] =  m_colSizeList[2][3];
+			jsonData.音リストのカラム幅3[4] =  m_colSizeList[2][4];
+
+			jsonData.音リストのカラム幅4[0] =  m_colSizeList[3][0];
+			jsonData.音リストのカラム幅4[1] =  m_colSizeList[3][1];
+			jsonData.音リストのカラム幅4[2] =  m_colSizeList[3][2];
+			jsonData.音リストのカラム幅4[3] =  m_colSizeList[3][3];
+			jsonData.音リストのカラム幅4[4] =  m_colSizeList[3][4];
+
+			jsonData.音リストのカラム幅5[0] =  m_colSizeList[4][0];
+			jsonData.音リストのカラム幅5[1] =  m_colSizeList[4][1];
+			jsonData.音リストのカラム幅5[2] =  m_colSizeList[4][2];
+			jsonData.音リストのカラム幅5[3] =  m_colSizeList[4][3];
+			jsonData.音リストのカラム幅5[4] =  m_colSizeList[4][4];
 
 			//ツールオプションのon/off
 			for( int i = 0; i < jsonData.機能オプションONOFF.Count; i++ )
 			{
-				jsonData.機能オプションONOFF[i] = ( m_toolOption[i]== 1?true:false);;
+				jsonData.機能オプションONOFF[i] = ( m_toolOption[i]== 1?true:false);
 			}
 
 
